@@ -4,17 +4,19 @@ const bcrypt = require("bcrypt");
 const cors = require("cors");
 
 const app = express();
-const PORT = 3000;
+
+// 🔥 IMPORTANTE: Render usa porta dinâmica
+const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// Banco SQLite (better-sqlite3)
+// Banco SQLite
 const db = new Database("database.db");
 
-// Criar tabela (better-sqlite3 NÃO usa serialize)
+// Criar tabela
 db.prepare(`
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,6 +25,14 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL
 )
 `).run();
+
+
+// =========================
+// REDIRECT (IMPORTANTE)
+// =========================
+app.get("/", (req, res) => {
+    res.redirect("/login.html");
+});
 
 
 // =========================
@@ -108,5 +118,5 @@ app.post("/login", async (req, res) => {
 // START SERVER
 // =========================
 app.listen(PORT, () => {
-    console.log(`🔥 Servidor rodando em http://localhost:${PORT}`);
+    console.log(`🔥 Servidor rodando na porta ${PORT}`);
 });
