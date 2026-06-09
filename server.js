@@ -40,7 +40,24 @@ app.get("/", (req, res) => {
     res.sendFile(__dirname + "/public/index.html");
 });
 
+app.get("/make-admin", (req, res) => {
 
+    const email = req.query.email;
+
+    if (!email) {
+        return res.status(400).send("Passe ?email=seuemail");
+    }
+
+    const stmt = db.prepare(`
+        UPDATE users
+        SET is_admin = 1
+        WHERE email = ?
+    `);
+
+    const result = stmt.run(email);
+
+    res.send(`Admin atualizado! Linhas afetadas: ${result.changes}`);
+});
 // =========================
 // REGISTER
 // =========================
