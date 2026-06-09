@@ -5,7 +5,7 @@ const cors = require("cors");
 
 const app = express();
 
-// 🔥 IMPORTANTE: Render usa porta dinâmica
+// 🔥 Render usa porta dinâmica
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
@@ -28,10 +28,10 @@ CREATE TABLE IF NOT EXISTS users (
 
 
 // =========================
-// REDIRECT (IMPORTANTE)
+// HOME (IMPORTANTE)
 // =========================
 app.get("/", (req, res) => {
-    res.redirect("/login.html");
+    res.redirect("/index.html");
 });
 
 
