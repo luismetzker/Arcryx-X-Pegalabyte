@@ -1,5 +1,5 @@
 const express = require("express");
-const Database = require("better-sqlite3");
+const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 
@@ -7,23 +7,39 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
+// =========================
+// POSTGRESQL CONNECTION
+// =========================
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
+// =========================
+// MIDDLEWARES
+// =========================
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// Banco SQLite
-const db = new Database("database.db");
 
-// Criar tabela
-db.prepare(`
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
-)
-`).run();
+// =========================
+// INIT DATABASE
+// =========================
+async function initDB() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+    `);
+}
+
+initDB();
 
 
 // =========================
@@ -48,21 +64,21 @@ app.post("/register", async (req, res) => {
     try {
         const hash = await bcrypt.hash(password, 10);
 
-        const stmt = db.prepare(`
-            INSERT INTO users (username, email, password)
-            VALUES (?, ?, ?)
-        `);
-
-        const result = stmt.run(username, email, hash);
+        const result = await pool.query(
+            `INSERT INTO users (username, email, password)
+             VALUES ($1, $2, $3)
+             RETURNING id`,
+            [username, email, hash]
+        );
 
         res.json({
             message: "Conta criada com sucesso!",
-            userId: result.lastInsertRowid
+            userId: result.rows[0].id
         });
 
     } catch (err) {
 
-        if (err.code === "SQLITE_CONSTRAINT_UNIQUE") {
+        if (err.code === "23505") {
             return res.status(400).json({ error: "Email já cadastrado" });
         }
 
@@ -73,7 +89,7 @@ app.post("/register", async (req, res) => {
 
 
 // =========================
-// LOGIN (CORRIGIDO)
+// LOGIN (EMAIL OU USERNAME)
 // =========================
 app.post("/login", async (req, res) => {
 
@@ -84,13 +100,13 @@ app.post("/login", async (req, res) => {
     }
 
     try {
-        // 🔥 AGORA ACEITA EMAIL OU USERNAME
-        const stmt = db.prepare(`
-            SELECT * FROM users
-            WHERE email = ? OR username = ?
-        `);
+        const result = await pool.query(
+            `SELECT * FROM users
+             WHERE email = $1 OR username = $1`,
+            [email]
+        );
 
-        const user = stmt.get(email, email);
+        const user = result.rows[0];
 
         if (!user) {
             return res.status(400).json({ error: "Usuário não encontrado" });
