@@ -1,65 +1,37 @@
-<<<<<<< HEAD
 @echo off
 cls
 
 echo ==========================
-echo Enviando para o GitHub...
+echo  UPLOAD PARA GITHUB
 echo ==========================
 
 cd /d "%~dp0"
 
-git init
+:: evita problema de repo quebrado
+if not exist ".git" (
+    git init
+)
 
+:: adiciona tudo do projeto (SÓ essa pasta)
 git add .
 
-git commit -m "update site"
+:: commit automático com data/hora
+git commit -m "update %date% %time%"
 
+:: garante branch main
 git branch -M main
 
+:: configura remote (remove e recria pra não dar erro)
 git remote remove origin 2>nul
-git remote add origin https://github.com/luismetzker/Arcryx-X-Pegalabyte
-
-git pull origin main --allow-unrelated-histories
-
-git push -u origin main
-
-echo ==========================
-echo Upload concluido!
-echo ==========================
-
-pause
-=======
-```bat
-@echo off
-title Arcryx GitHub Upload
-
-REM Vai para a pasta onde o .bat está
-cd /d "%~dp0"
-
-echo ==========================
-echo Projeto:
-echo %CD%
-echo ==========================
-echo.
-
-git init
-
-git branch -M main
-
-git add .
-
-git commit -m "Atualizacao %date% %time%"
-
-git remote remove origin 2>nul
-
 git remote add origin https://github.com/luismetzker/Arcryx-X-Pegalabyte.git
 
+:: garante sincronização com repo remoto
+git pull origin main --allow-unrelated-histories 2>nul
+
+:: envia tudo
 git push -u origin main
 
-echo.
 echo ==========================
-echo Processo concluido
+echo  UPLOAD FINALIZADO
 echo ==========================
 pause
-```
->>>>>>> 7f5987c92d304de67c2cae72ea8d005930b359e5
