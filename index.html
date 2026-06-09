@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Gods - Arcryx Pegalabyte</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    overflow:hidden;
+
+    background:linear-gradient(
+        -45deg,
+        #00140f,
+        #001f30,
+        #003d2f,
+        #00284a
+    );
+
+    background-size:400% 400%;
+    animation:fundoAnimado 10s ease infinite;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+
+    background:
+    radial-gradient(
+        ellipse at center,
+        rgba(0,0,0,0) 15%,
+        rgba(0,0,0,0.35) 55%,
+        rgba(0,0,0,0.75) 80%,
+        rgba(0,0,0,0.95) 100%
+    );
+
+    pointer-events:none;
+    z-index:0;
+}
+
+@keyframes fundoAnimado{
+    0%{
+        background-position:0% 50%;
+    }
+    50%{
+        background-position:100% 50%;
+    }
+    100%{
+        background-position:0% 50%;
+    }
+}
+
+.login-box{
+    position:relative;
+    z-index:1;
+
+    width:420px;
+    padding:40px;
+
+    background:rgba(0,0,0,0.80);
+
+    border:3px solid #7e6c09;
+    border-radius:20px;
+
+    backdrop-filter:blur(15px);
+
+    box-shadow:
+        0 0 20px rgba(0,0,0,0.9),
+        0 0 40px rgba(0,0,0,0.8),
+        0 0 10px #7e6c09,
+        0 0 25px #7e6c09,
+        0 0 40px rgba(126,108,9,0.5);
+
+    text-align:center;
+}
+
+.logo{
+    width:140px;
+    margin-bottom:15px;
+
+    filter:
+        drop-shadow(0 0 10px #7e6c09)
+        drop-shadow(0 0 25px #7e6c09);
+}
+
+h1{
+    color:rgb(249, 253, 0);
+    margin-bottom:10px;
+    font-size:24px;
+    font-family:'Press Start 2P', cursive;
+}
+h2{
+    color:white;
+    margin-bottom:10px;
+    font-size:14px;
+}
+
+.input-group{
+    position:relative;
+    margin-bottom:18px;
+}
+
+.input-group input{
+    width:100%;
+    padding:14px 45px 14px 15px;
+
+    border:none;
+    outline:none;
+
+    border-radius:10px;
+
+    background:#101010;
+    color:white;
+
+    border:1px solid #333;
+
+    transition:0.3s;
+}
+
+.input-group input:focus{
+    border-color:#00ff99;
+    box-shadow:0 0 15px #00ff99;
+}
+
+.input-group i{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#aaa;
+}
+
+.toggle-password{
+    cursor:pointer;
+}
+
+.btn{
+    width:100%;
+    padding:14px;
+
+    border:none;
+    border-radius:10px;
+
+    font-size:15px;
+    font-weight:bold;
+
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.login-btn{
+    background:#00ff99;
+    color:black;
+}
+
+.login-btn:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 0 15px #00ff99,
+        0 0 30px #00ff99;
+}
+
+.register-btn{
+    margin-top:12px;
+
+    background:transparent;
+
+    color:#FFD700;
+
+    border:2px solid #FFD700;
+}
+
+.register-btn:hover{
+    background:#FFD700;
+    color:black;
+
+    box-shadow:
+        0 0 15px #FFD700,
+        0 0 35px #FFD700;
+}
+
+.footer{
+    margin-top:20px;
+    color:#666;
+    font-size:12px;
+}
+
+.remember-me{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    margin-bottom:18px;
+    color:#ffffff;
+    font-size:12px;
+}
+
+.remember-me label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+}
+
+.remember-me input[type="checkbox"]{
+    width:18px;
+    height:18px;
+    cursor:pointer;
+
+    accent-color:#00ff99;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <img src="logo.png" class="logo" alt="Logo">
+
+    <h1>Arcryx X Pegalabyte</h1>
+    <h2>By: The Gods</h2>
+
+    <div class="input-group">
+        <input type="text" placeholder="Usuário ou Email">
+        <i class="fa-solid fa-user"></i>
+    </div>
+
+    <div class="input-group">
+        <input type="password" id="senha" placeholder="Senha">
+        <i class="fa-solid fa-eye toggle-password" onclick="mostrarSenha()"></i>
+    </div>
+    <div class="remember-me"> <label> <input type="checkbox" id="autologin"> Lembrar de mim da próxima vez </label> </div>
+    <button class="btn login-btn">
+        Entrar
+    </button>
+    <a href="signup.html" class="register-link">
+        <button class="btn register-btn"  onclick="register()">
+            Criar Conta
+        </button>
+    </a>
+
+    <div class="footer">
+        © The Gods - Arcryx X Pegalabyte
+    </div>
+
+</div>
+</body>
+<script>
+
+function mostrarSenha(){
+
+    const senha = document.getElementById("senha");
+    const olho = document.querySelector(".toggle-password");
+
+    if(senha.type === "password"){
+        senha.type = "text";
+        olho.classList.remove("fa-eye");
+        olho.classList.add("fa-eye-slash");
+    } else {
+        senha.type = "password";
+        olho.classList.remove("fa-eye-slash");
+        olho.classList.add("fa-eye");
+    }
+}
+
+function login(){
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("senha").value;
+
+    if(!email || !password){
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if(data.error){
+            alert("Erro: " + data.error);
+            return;
+        }
+
+        alert("Login realizado com sucesso!");
+
+        // aqui você pode mandar pro painel depois
+        window.location.href = "dashboard.html";
+
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Erro ao conectar com o servidor");
+    });
+
+}
+
+</script>
+
+
+</html>
