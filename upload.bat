@@ -4,7 +4,7 @@ cls
 echo ==========================
 echo  UPLOAD PARA GITHUB
 echo ==========================
-
+git rm -r --cached node_modules
 cd /d "%~dp0"
 
 :: evita problema de repo quebrado
