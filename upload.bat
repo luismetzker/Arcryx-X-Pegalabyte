@@ -16,7 +16,7 @@ git commit -m "update site"
 git branch -M main
 
 git remote remove origin 2>nul
-git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
+git remote add origin https://github.com/luismetzker/Arcryx-X-Pegalabyte
 
 git pull origin main --allow-unrelated-histories
 
