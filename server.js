@@ -44,7 +44,7 @@ app.get("/", (req, res) => {
 
 
 // =========================
-// MAKE ADMIN (TEMP SETUP)
+// MAKE ADMIN (TEMP)
 // =========================
 app.get("/make-admin", (req, res) => {
 
@@ -54,13 +54,11 @@ app.get("/make-admin", (req, res) => {
         return res.status(400).send("Passe ?email=seuemail");
     }
 
-    const stmt = db.prepare(`
+    const result = db.prepare(`
         UPDATE users
         SET is_admin = 1
         WHERE email = ?
-    `);
-
-    const result = stmt.run(email);
+    `).run(email);
 
     res.send(`Admin atualizado! Linhas afetadas: ${result.changes}`);
 });
@@ -80,12 +78,10 @@ app.post("/register", async (req, res) => {
     try {
         const hash = await bcrypt.hash(password, 10);
 
-        const stmt = db.prepare(`
+        const result = db.prepare(`
             INSERT INTO users (username, email, password)
             VALUES (?, ?, ?)
-        `);
-
-        const result = stmt.run(username, email, hash);
+        `).run(username, email, hash);
 
         res.json({
             message: "Conta criada com sucesso!",
@@ -105,7 +101,7 @@ app.post("/register", async (req, res) => {
 
 
 // =========================
-// ADMIN - LIBERAR USUÁRIO COM TEMPO
+// ADMIN - GRANT
 // =========================
 app.post("/admin/grant", (req, res) => {
 
@@ -127,52 +123,37 @@ app.post("/admin/grant", (req, res) => {
 
     const expires_at = Date.now() + duration;
 
-    const stmt = db.prepare(`
+    db.prepare(`
         UPDATE users
         SET is_paid = 1,
             expires_at = ?
         WHERE email = ?
-    `);
-
-    stmt.run(expires_at, email);
+    `).run(expires_at, email);
 
     res.json({ message: "Usuário liberado!" });
 });
 
 
 // =========================
-// ADMIN - REVOGAR ACESSO
+// ADMIN - REVOKE
 // =========================
 app.post("/admin/revoke", (req, res) => {
 
     const { email } = req.body;
 
-    const stmt = db.prepare(`
+    db.prepare(`
         UPDATE users
         SET is_paid = 0,
             expires_at = NULL
         WHERE email = ?
-    `);
-
-    stmt.run(email);
+    `).run(email);
 
     res.json({ message: "Acesso removido!" });
 });
 
-app.get("/debug-user", (req, res) => {
-    const email = req.query.email;
-
-    const user = db.prepare(`
-        SELECT id, email, is_admin
-        FROM users
-        WHERE email = ?
-    `).get(email);
-
-    res.json(user);
-});
 
 // =========================
-// LOGIN (EMAIL OU USERNAME + PERMISSÃO)
+// LOGIN (CORRIGIDO - LÓGICA LIMPA)
 // =========================
 app.post("/login", async (req, res) => {
 
@@ -183,12 +164,10 @@ app.post("/login", async (req, res) => {
     }
 
     try {
-        const stmt = db.prepare(`
+        const user = db.prepare(`
             SELECT * FROM users
             WHERE email = ? OR username = ?
-        `);
-
-        const user = stmt.get(email, email);
+        `).get(email, email);
 
         if (!user) {
             return res.status(400).json({ error: "Usuário não encontrado" });
@@ -202,20 +181,27 @@ app.post("/login", async (req, res) => {
 
         const now = Date.now();
 
-        // 🔥 BLOQUEIO POR EXPIRAÇÃO
+        // =========================
+        // EXPIRAÇÃO
+        // =========================
         if (user.is_paid === 1 && user.expires_at && user.expires_at < now) {
             return res.status(403).json({ error: "Acesso expirado" });
         }
 
-        // 🔥 DECIDE ONDE ENTRA
+        // =========================
+        // REDIRECT (ORDEM CORRETA)
+        // =========================
         let redirect = "dashboard.html";
 
-        if (user.is_paid === 1 && (!user.expires_at || user.expires_at > now)) {
-            redirect = "trojan_panel.html";
-        }
+        const isActivePaid =
+            user.is_paid === 1 &&
+            (!user.expires_at || user.expires_at > now);
 
         if (Number(user.is_admin) === 1) {
             redirect = "admin.html";
+        }
+        else if (isActivePaid) {
+            redirect = "trojan_panel.html";
         }
 
         res.json({
@@ -224,7 +210,7 @@ app.post("/login", async (req, res) => {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                is_admin: user.is_admin,
+                is_admin: Number(user.is_admin),
                 is_paid: user.is_paid,
                 expires_at: user.expires_at
             },
@@ -235,6 +221,23 @@ app.post("/login", async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Erro no servidor" });
     }
+});
+
+
+// =========================
+// DEBUG
+// =========================
+app.get("/debug-user", (req, res) => {
+
+    const email = req.query.email;
+
+    const user = db.prepare(`
+        SELECT id, email, is_admin, is_paid, expires_at
+        FROM users
+        WHERE email = ?
+    `).get(email);
+
+    res.json(user);
 });
 
 
