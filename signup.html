@@ -1,14 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Gods - Arcryx Pegalabyte</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
+    <title>Criar Conta - Arcryx X Pegalabyte</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 
@@ -57,22 +55,16 @@ body::before{
 }
 
 @keyframes fundoAnimado{
-    0%{
-        background-position:0% 50%;
-    }
-    50%{
-        background-position:100% 50%;
-    }
-    100%{
-        background-position:0% 50%;
-    }
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
 }
 
-.login-box{
+.signup-box{
     position:relative;
     z-index:1;
 
-    width:420px;
+    width:500px;
     padding:40px;
 
     background:rgba(0,0,0,0.80);
@@ -102,54 +94,40 @@ body::before{
 }
 
 h1{
-    color:rgb(249, 253, 0);
+    color:#f9fd00;
     margin-bottom:10px;
-    font-size:24px;
+    font-size:22px;
     font-family:'Press Start 2P', cursive;
 }
+
 h2{
     color:white;
-    margin-bottom:10px;
+    margin-bottom:25px;
     font-size:14px;
 }
 
 .input-group{
     position:relative;
-    margin-bottom:18px;
+    margin-bottom:15px;
 }
 
 .input-group input{
     width:100%;
-    padding:14px 45px 14px 15px;
+    padding:14px;
 
     border:none;
     outline:none;
-
     border-radius:10px;
 
     background:#101010;
     color:white;
 
     border:1px solid #333;
-
-    transition:0.3s;
 }
 
 .input-group input:focus{
     border-color:#00ff99;
     box-shadow:0 0 15px #00ff99;
-}
-
-.input-group i{
-    position:absolute;
-    right:15px;
-    top:50%;
-    transform:translateY(-50%);
-    color:#aaa;
-}
-
-.toggle-password{
-    cursor:pointer;
 }
 
 .btn{
@@ -159,43 +137,49 @@ h2{
     border:none;
     border-radius:10px;
 
-    font-size:15px;
-    font-weight:bold;
-
     cursor:pointer;
+    font-weight:bold;
     transition:0.3s;
 }
 
-.login-btn{
+.signup-btn{
     background:#00ff99;
     color:black;
 }
 
-.login-btn:hover{
-    transform:translateY(-2px);
-
+.signup-btn:hover{
     box-shadow:
         0 0 15px #00ff99,
         0 0 30px #00ff99;
 }
 
-.register-btn{
+.google-btn{
     margin-top:12px;
 
-    background:transparent;
-
-    color:#FFD700;
-
-    border:2px solid #FFD700;
-}
-
-.register-btn:hover{
-    background:#FFD700;
+    background:white;
     color:black;
 
-    box-shadow:
-        0 0 15px #FFD700,
-        0 0 35px #FFD700;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+}
+
+.google-btn:hover{
+    transform:translateY(-2px);
+}
+
+.login-link{
+    display:block;
+
+    margin-top:15px;
+
+    color:#FFD700;
+    text-decoration:none;
+}
+
+.login-link:hover{
+    text-shadow:0 0 10px #FFD700;
 }
 
 .footer{
@@ -204,60 +188,78 @@ h2{
     font-size:12px;
 }
 
-.remember-me{
-    display:flex;
-    align-items:center;
-    justify-content:flex-start;
-    margin-bottom:18px;
-    color:#ffffff;
-    font-size:12px;
+hr{
+    margin:20px 0;
+    border:1px solid #222;
+}
+.input-group{
+    position:relative;
+    margin-bottom:15px;
 }
 
-.remember-me label{
-    display:flex;
-    align-items:center;
-    gap:10px;
+.input-group input{
+    width:100%;
+    padding:14px 50px 14px 14px;
+}
+
+.toggle-password{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    color:#aaa;
     cursor:pointer;
+
+    transition:0.3s;
 }
 
-.remember-me input[type="checkbox"]{
-    width:18px;
-    height:18px;
-    cursor:pointer;
-
-    accent-color:#00ff99;
+.toggle-password:hover{
+    color:#00ff99;
 }
-
-
 </style>
 </head>
 
 <body>
 
-<div class="login-box">
+<div class="signup-box">
 
     <img src="logo.png" class="logo" alt="Logo">
 
-    <h1>Arcryx X Pegalabyte</h1>
-    <h2>By: The Gods</h2>
+    <h1>CRIAR CONTA</h1>
+    <h2>Arcryx X Pegalabyte</h2>
 
     <div class="input-group">
-        <input type="text" placeholder="Usuário ou Email">
-        <i class="fa-solid fa-user"></i>
+        <input type="text" placeholder="Usuário">
+    </div>
+
+    <div class="input-group">
+        <input type="email" placeholder="Email">
     </div>
 
     <div class="input-group">
         <input type="password" id="senha" placeholder="Senha">
-        <i class="fa-solid fa-eye toggle-password" onclick="mostrarSenha()"></i>
+        <i class="fa-solid fa-eye toggle-password" onclick="mostrarSenha('senha', this)"></i>
     </div>
-    <div class="remember-me"> <label> <input type="checkbox" id="autologin"> Lembrar de mim da próxima vez </label> </div>
-    <button class="btn login-btn">
-        Entrar
+
+    <div class="input-group">
+        <input type="password" id="confirmarSenha" placeholder="Confirmar Senha">
+        <i class="fa-solid fa-eye toggle-password" onclick="mostrarSenha('confirmarSenha', this)"></i>
+    </div>
+
+    <button class="btn signup-btn">
+        Criar Conta
     </button>
-    <a href="signup.html" class="register-link">
-        <button class="btn register-btn">
-            Criar Conta
-        </button>
+
+    <hr>
+
+    <button class="btn google-btn">
+        <i class="fa-brands fa-google"></i>
+        Entrar com Google
+    </button>
+
+    <a href="index.html" class="login-link">
+        Já possui conta? Entrar
     </a>
 
     <div class="footer">
@@ -266,24 +268,24 @@ h2{
 
 </div>
 
+</body>
 <script>
 
-function mostrarSenha(){
+function mostrarSenha(idCampo, icone){
 
-    const senha = document.getElementById("senha");
-    const olho = document.querySelector(".toggle-password");
+    const campo = document.getElementById(idCampo);
 
-    if(senha.type === "password"){
-        senha.type = "text";
-        olho.classList.replace("fa-eye", "fa-eye-slash");
+    if(campo.type === "password"){
+        campo.type = "text";
+        icone.classList.remove("fa-eye");
+        icone.classList.add("fa-eye-slash");
     }else{
-        senha.type = "password";
-        olho.classList.replace("fa-eye-slash", "fa-eye");
+        campo.type = "password";
+        icone.classList.remove("fa-eye-slash");
+        icone.classList.add("fa-eye");
     }
 
 }
 
 </script>
-
-</body>
 </html>
