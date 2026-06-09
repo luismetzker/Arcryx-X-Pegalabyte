@@ -112,7 +112,7 @@ body::before{
     max-width:900px;
 }
 
-/* INPUTS */
+/* FORM */
 
 .top-form{
     display:flex;
@@ -137,27 +137,36 @@ body::before{
     font-weight:bold;
 }
 
-/* USER LIST */
+/* TABLE */
 
-.user-box{
-    background:#111;
-    padding:10px;
-    border-radius:10px;
-    margin-bottom:10px;
-    border:1px solid #333;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+table{
+    width:100%;
+    border-collapse:collapse;
 }
 
-.delete{
-    color:red;
-    cursor:pointer;
+th{
+    text-align:left;
+    color:#FFD700;
+    padding:10px;
+}
+
+td{
+    padding:10px;
+    border-bottom:1px solid #333;
+}
+
+tr:hover{
+    background:rgba(255,255,255,0.05);
 }
 
 .timer{
     color:#FFD700;
     font-weight:bold;
+}
+
+.delete{
+    color:red;
+    cursor:pointer;
 }
 
 </style>
@@ -167,7 +176,6 @@ body::before{
 <!-- SIDEBAR -->
 <div class="sidebar">
     <h1>ADMIN</h1>
-
     <div class="menu-item">🔒 Permissions</div>
 </div>
 
@@ -191,18 +199,18 @@ body::before{
     </div>
 
     <!-- TABLE -->
-    <table style="width:100%; margin-top:20px; border-collapse:collapse;">
+    <table>
         <thead>
-            <tr style="text-align:left; color:#FFD700;">
-            <th>Usuário</th>
-            <th>Email</th>
-            <th>Tempo restante</th>
-            <th>Ação</th>
-        </tr>
-    </thead>
+            <tr>
+                <th>Usuário</th>
+                <th>Email</th>
+                <th>Tempo restante</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
 
-    <tbody id="users"></tbody>
-</table>
+        <tbody id="users"></tbody>
+    </table>
 
 </div>
 
@@ -211,7 +219,6 @@ body::before{
 <script>
 
 function formatTime(ms){
-
     if(!ms || ms < 0) return "Expirado";
 
     const s = Math.floor(ms / 1000);
@@ -233,23 +240,19 @@ function carregar(){
 
         users.forEach(u => {
 
-            let timeLeft = u.expires_at ? (u.expires_at - Date.now()) : null;
+            const timeLeft = u.expires_at ? (u.expires_at - Date.now()) : null;
 
             container.innerHTML += `
-                <div class="user-box">
-
-                    <div>
-                        <b>${u.username}</b> (${u.email})
-                        <div class="timer">
-                            ${u.is_paid ? formatTime(timeLeft) : "Não liberado"}
-                        </div>
-                    </div>
-
-                    <div onclick="remover('${u.email}')" class="delete">
+                <tr>
+                    <td>${u.username}</td>
+                    <td>${u.email}</td>
+                    <td class="timer">
+                        ${u.is_paid ? formatTime(timeLeft) : "Não liberado"}
+                    </td>
+                    <td onclick="remover('${u.email}')" class="delete">
                         <i class="fa-solid fa-trash"></i>
-                    </div>
-
-                </div>
+                    </td>
+                </tr>
             `;
         });
 
@@ -280,8 +283,7 @@ function remover(email){
 }
 
 carregar();
-
-setInterval(carregar, 30000); // atualiza countdown
+setInterval(carregar, 30000);
 
 </script>
 

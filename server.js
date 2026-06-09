@@ -133,6 +133,15 @@ app.post("/admin/grant", (req, res) => {
     res.json({ message: "Usuário liberado!" });
 });
 
+app.get("/admin/users", (req, res) => {
+
+    const users = db.prepare(`
+        SELECT id, username, email, is_paid, expires_at
+        FROM users
+    `).all();
+
+    res.json(users);
+});
 
 // =========================
 // ADMIN - REVOKE
