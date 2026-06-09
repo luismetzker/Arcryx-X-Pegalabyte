@@ -10,6 +10,8 @@
 
 <style>
 
+/* ===== SEU CSS INTACTO (NÃO MEXI NO DNA) ===== */
+
 *{
     margin:0;
     padding:0;
@@ -238,6 +240,8 @@ function mostrarSenha(){
     const senha = document.getElementById("senha");
     const olho = document.querySelector(".toggle-password");
 
+    if(!senha || !olho) return;
+
     if(senha.type === "password"){
         senha.type = "text";
         olho.classList.remove("fa-eye");
@@ -251,8 +255,8 @@ function mostrarSenha(){
 
 function login(){
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("senha").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("senha").value.trim();
 
     if(!email || !password){
         alert("Preencha todos os campos!");
@@ -264,16 +268,20 @@ function login(){
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            email,
-            password
-        })
+        body: JSON.stringify({ email, password })
     })
-    .then(res => res.json())
+    .then(async (res) => {
+
+        if(!res.ok){
+            throw new Error("Erro HTTP: " + res.status);
+        }
+
+        return res.json();
+    })
     .then(data => {
 
-        if(data.error){
-            alert("Erro: " + data.error);
+        if(!data || data.error){
+            alert("Erro: " + (data?.error || "Resposta inválida"));
             return;
         }
 

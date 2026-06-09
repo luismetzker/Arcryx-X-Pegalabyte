@@ -5,17 +5,12 @@ const cors = require("cors");
 
 const app = express();
 
-// 🔥 Render usa porta dinâmica
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
-
-app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/public/index.html");
-});
 
 // Banco SQLite
 const db = new Database("database.db");
@@ -32,15 +27,15 @@ CREATE TABLE IF NOT EXISTS users (
 
 
 // =========================
-// HOME (IMPORTANTE)
+// HOME
 // =========================
 app.get("/", (req, res) => {
-    res.redirect("/index.html");
+    res.sendFile(__dirname + "/public/index.html");
 });
 
 
 // =========================
-// REGISTRO
+// REGISTER
 // =========================
 app.post("/register", async (req, res) => {
 
@@ -78,7 +73,7 @@ app.post("/register", async (req, res) => {
 
 
 // =========================
-// LOGIN
+// LOGIN (CORRIGIDO)
 // =========================
 app.post("/login", async (req, res) => {
 
@@ -89,8 +84,13 @@ app.post("/login", async (req, res) => {
     }
 
     try {
-        const stmt = db.prepare("SELECT * FROM users WHERE email = ?");
-        const user = stmt.get(email);
+        // 🔥 AGORA ACEITA EMAIL OU USERNAME
+        const stmt = db.prepare(`
+            SELECT * FROM users
+            WHERE email = ? OR username = ?
+        `);
+
+        const user = stmt.get(email, email);
 
         if (!user) {
             return res.status(400).json({ error: "Usuário não encontrado" });
