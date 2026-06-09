@@ -214,7 +214,7 @@ app.post("/login", async (req, res) => {
             redirect = "trojan_panel.html";
         }
 
-        if (user.is_admin === 1) {
+        if (Number(user.is_admin) === 1) {
             redirect = "admin.html";
         }
 
