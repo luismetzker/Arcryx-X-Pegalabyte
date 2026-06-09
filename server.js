@@ -159,6 +159,17 @@ app.post("/admin/revoke", (req, res) => {
     res.json({ message: "Acesso removido!" });
 });
 
+app.get("/debug-user", (req, res) => {
+    const email = req.query.email;
+
+    const user = db.prepare(`
+        SELECT id, email, is_admin
+        FROM users
+        WHERE email = ?
+    `).get(email);
+
+    res.json(user);
+});
 
 // =========================
 // LOGIN (EMAIL OU USERNAME + PERMISSÃO)
