@@ -1,33 +1,29 @@
-```bat
 @echo off
-title Arcryx GitHub Upload
+cls
 
-REM Vai para a pasta onde o .bat está
+echo ==========================
+echo Enviando para o GitHub...
+echo ==========================
+
 cd /d "%~dp0"
-
-echo ==========================
-echo Projeto:
-echo %CD%
-echo ==========================
-echo.
 
 git init
 
-git branch -M main
-
 git add .
 
-git commit -m "Atualizacao %date% %time%"
+git commit -m "update site"
+
+git branch -M main
 
 git remote remove origin 2>nul
+git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
 
-git remote add origin https://github.com/luismetzker/Arcryx-X-Pegalabyte.git
+git pull origin main --allow-unrelated-histories
 
 git push -u origin main
 
-echo.
 echo ==========================
-echo Processo concluido
+echo Upload concluido!
 echo ==========================
+
 pause
-```
