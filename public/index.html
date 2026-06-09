@@ -286,7 +286,10 @@ function login(){
         }
 
         alert("Login realizado com sucesso!");
-        window.location.href = "dashboard.html";
+
+        // 🔥 CORREÇÃO PRINCIPAL AQUI
+        window.location.href = data.redirect;
+
     })
     .catch(err => {
         console.error(err);
