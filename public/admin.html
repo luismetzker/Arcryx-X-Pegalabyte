@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - The Gods</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<style>
+
+/* ===== SEU CSS (INALTERADO) ===== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    display:flex;
+    min-height:100vh;
+    overflow:hidden;
+
+    background:linear-gradient(
+        -45deg,
+        #00140f,
+        #001f30,
+        #003d2f,
+        #00284a
+    );
+
+    background-size:400% 400%;
+    animation:fundoAnimado 10s ease infinite;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0,0,0,0) 15%,
+        rgba(0,0,0,0.35) 55%,
+        rgba(0,0,0,0.75) 80%,
+        rgba(0,0,0,0.95) 100%
+    );
+
+    pointer-events:none;
+}
+
+@keyframes fundoAnimado{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:260px;
+    background:rgba(0,0,0,0.85);
+    border-right:2px solid #7e6c09;
+    padding:20px;
+    z-index:1;
+    backdrop-filter: blur(10px);
+}
+
+.sidebar h1{
+    font-family:'Press Start 2P', cursive;
+    font-size:14px;
+    color:rgb(249, 253, 0);
+    margin-bottom:20px;
+    text-align:center;
+}
+
+.menu-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px;
+    margin-bottom:10px;
+    border-radius:10px;
+    cursor:pointer;
+    color:#fff;
+    border:1px solid transparent;
+}
+
+.menu-item:hover{
+    border:1px solid #7e6c09;
+    box-shadow:0 0 10px #7e6c09;
+}
+
+/* CONTENT */
+
+.content{
+    flex:1;
+    padding:30px;
+    z-index:1;
+    color:white;
+}
+
+.card{
+    background:rgba(0,0,0,0.75);
+    border:2px solid #7e6c09;
+    border-radius:15px;
+    padding:20px;
+    max-width:900px;
+}
+
+/* INPUTS */
+
+.top-form{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+.top-form input, select{
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    outline:none;
+}
+
+.top-form button{
+    background:#00ff99;
+    border:none;
+    padding:10px 15px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+/* USER LIST */
+
+.user-box{
+    background:#111;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:10px;
+    border:1px solid #333;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.delete{
+    color:red;
+    cursor:pointer;
+}
+
+.timer{
+    color:#FFD700;
+    font-weight:bold;
+}
+
+</style>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h1>ADMIN</h1>
+
+    <div class="menu-item">🔒 Permissions</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<div class="card">
+
+    <h2>Permissions</h2>
+
+    <!-- FORM -->
+    <div class="top-form">
+        <input id="email" placeholder="Email do usuário">
+
+        <select id="plan">
+            <option value="monthly">Mensal</option>
+            <option value="yearly">Anual</option>
+        </select>
+
+        <button onclick="liberar()">Liberar</button>
+    </div>
+
+    <!-- TABLE -->
+    <table style="width:100%; margin-top:20px; border-collapse:collapse;">
+        <thead>
+            <tr style="text-align:left; color:#FFD700;">
+            <th>Usuário</th>
+            <th>Email</th>
+            <th>Tempo restante</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+
+    <tbody id="users"></tbody>
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function formatTime(ms){
+
+    if(!ms || ms < 0) return "Expirado";
+
+    const s = Math.floor(ms / 1000);
+    const d = Math.floor(s / 86400);
+    const h = Math.floor((s % 86400) / 3600);
+    const m = Math.floor((s % 3600) / 60);
+
+    return `${d}d ${h}h ${m}m`;
+}
+
+function carregar(){
+
+    fetch("https://arcryx-x-pegalabyte.onrender.com/admin/users")
+    .then(res => res.json())
+    .then(users => {
+
+        const container = document.getElementById("users");
+        container.innerHTML = "";
+
+        users.forEach(u => {
+
+            let timeLeft = u.expires_at ? (u.expires_at - Date.now()) : null;
+
+            container.innerHTML += `
+                <div class="user-box">
+
+                    <div>
+                        <b>${u.username}</b> (${u.email})
+                        <div class="timer">
+                            ${u.is_paid ? formatTime(timeLeft) : "Não liberado"}
+                        </div>
+                    </div>
+
+                    <div onclick="remover('${u.email}')" class="delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
+
+                </div>
+            `;
+        });
+
+    });
+}
+
+function liberar(){
+
+    const email = document.getElementById("email").value;
+    const plan = document.getElementById("plan").value;
+
+    fetch("https://arcryx-x-pegalabyte.onrender.com/admin/grant", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ email, plan })
+    })
+    .then(() => carregar());
+}
+
+function remover(email){
+
+    fetch("https://arcryx-x-pegalabyte.onrender.com/admin/revoke", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ email })
+    })
+    .then(() => carregar());
+}
+
+carregar();
+
+setInterval(carregar, 30000); // atualiza countdown
+
+</script>
+
+</body>
+</html>

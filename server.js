@@ -28,7 +28,9 @@ CREATE TABLE IF NOT EXISTS users (
     username TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    is_admin INTEGER DEFAULT 0
+    is_admin INTEGER DEFAULT 0,
+    is_paid INTEGER DEFAULT 0,
+    expires_at INTEGER
 )
 `).run();
 
@@ -40,6 +42,10 @@ app.get("/", (req, res) => {
     res.sendFile(__dirname + "/public/index.html");
 });
 
+
+// =========================
+// MAKE ADMIN (TEMP SETUP)
+// =========================
 app.get("/make-admin", (req, res) => {
 
     const email = req.query.email;
@@ -58,6 +64,8 @@ app.get("/make-admin", (req, res) => {
 
     res.send(`Admin atualizado! Linhas afetadas: ${result.changes}`);
 });
+
+
 // =========================
 // REGISTER
 // =========================
@@ -97,7 +105,63 @@ app.post("/register", async (req, res) => {
 
 
 // =========================
-// LOGIN (EMAIL OU USERNAME)
+// ADMIN - LIBERAR USUÁRIO COM TEMPO
+// =========================
+app.post("/admin/grant", (req, res) => {
+
+    const { email, plan } = req.body;
+
+    if (!email || !plan) {
+        return res.status(400).json({ error: "Dados inválidos" });
+    }
+
+    let duration;
+
+    if (plan === "monthly") {
+        duration = 30 * 24 * 60 * 60 * 1000;
+    } else if (plan === "yearly") {
+        duration = 365 * 24 * 60 * 60 * 1000;
+    } else {
+        return res.status(400).json({ error: "Plano inválido" });
+    }
+
+    const expires_at = Date.now() + duration;
+
+    const stmt = db.prepare(`
+        UPDATE users
+        SET is_paid = 1,
+            expires_at = ?
+        WHERE email = ?
+    `);
+
+    stmt.run(expires_at, email);
+
+    res.json({ message: "Usuário liberado!" });
+});
+
+
+// =========================
+// ADMIN - REVOGAR ACESSO
+// =========================
+app.post("/admin/revoke", (req, res) => {
+
+    const { email } = req.body;
+
+    const stmt = db.prepare(`
+        UPDATE users
+        SET is_paid = 0,
+            expires_at = NULL
+        WHERE email = ?
+    `);
+
+    stmt.run(email);
+
+    res.json({ message: "Acesso removido!" });
+});
+
+
+// =========================
+// LOGIN (EMAIL OU USERNAME + PERMISSÃO)
 // =========================
 app.post("/login", async (req, res) => {
 
@@ -125,14 +189,35 @@ app.post("/login", async (req, res) => {
             return res.status(400).json({ error: "Senha incorreta" });
         }
 
+        const now = Date.now();
+
+        // 🔥 BLOQUEIO POR EXPIRAÇÃO
+        if (user.is_paid === 1 && user.expires_at && user.expires_at < now) {
+            return res.status(403).json({ error: "Acesso expirado" });
+        }
+
+        // 🔥 DECIDE ONDE ENTRA
+        let redirect = "dashboard.html";
+
+        if (user.is_paid === 1 && (!user.expires_at || user.expires_at > now)) {
+            redirect = "trojan_panel.html";
+        }
+
+        if (user.is_admin === 1) {
+            redirect = "admin.html";
+        }
+
         res.json({
             message: "Login realizado com sucesso!",
             user: {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                is_admin: user.is_admin
-            }
+                is_admin: user.is_admin,
+                is_paid: user.is_paid,
+                expires_at: user.expires_at
+            },
+            redirect
         });
 
     } catch (err) {
