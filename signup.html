@@ -229,33 +229,26 @@ hr{
     <h1>CRIAR CONTA</h1>
     <h2>Arcryx X Pegalabyte</h2>
 
-    <div class="input-group">
-        <input type="text" placeholder="Usuário">
-    </div>
+  <div class="input-group">
+    <input id="username" type="text" placeholder="Usuário">
+</div>
 
-    <div class="input-group">
-        <input type="email" placeholder="Email">
-    </div>
+<div class="input-group">
+    <input id="email" type="email" placeholder="Email">
+</div>
 
-    <div class="input-group">
-        <input type="password" id="senha" placeholder="Senha">
-        <i class="fa-solid fa-eye toggle-password" onclick="mostrarSenha('senha', this)"></i>
-    </div>
+<div class="input-group">
+    <input type="password" id="senha" placeholder="Senha">
+    <i class="fa-solid fa-eye toggle-password" onclick="mostrarSenha('senha', this)"></i>
+</div>
 
-    <div class="input-group">
-        <input type="password" id="confirmarSenha" placeholder="Confirmar Senha">
-        <i class="fa-solid fa-eye toggle-password" onclick="mostrarSenha('confirmarSenha', this)"></i>
-    </div>
+<div class="input-group">
+    <input type="password" id="confirmarSenha" placeholder="Confirmar Senha">
+    <i class="fa-solid fa-eye toggle-password" onclick="mostrarSenha('confirmarSenha', this)"></i>
+</div>
 
-    <button class="btn signup-btn">
+    <button class="btn signup-btn" onclick="register()">
         Criar Conta
-    </button>
-
-    <hr>
-
-    <button class="btn google-btn">
-        <i class="fa-brands fa-google"></i>
-        Entrar com Google
     </button>
 
     <a href="index.html" class="login-link">
@@ -272,18 +265,65 @@ hr{
 <script>
 
 function mostrarSenha(idCampo, icone){
-
     const campo = document.getElementById(idCampo);
 
     if(campo.type === "password"){
         campo.type = "text";
         icone.classList.remove("fa-eye");
         icone.classList.add("fa-eye-slash");
-    }else{
+    } else {
         campo.type = "password";
         icone.classList.remove("fa-eye-slash");
         icone.classList.add("fa-eye");
     }
+}
+
+function register(){
+
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const confirmarSenha = document.getElementById("confirmarSenha").value;
+
+    // validações básicas
+    if(!username || !email || !senha){
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    if(senha !== confirmarSenha){
+        alert("As senhas não coincidem!");
+        return;
+    }
+
+    fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: username,
+            email: email,
+            password: senha
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if(data.error){
+            alert("Erro: " + data.error);
+            return;
+        }
+
+        alert(data.message || "Conta criada com sucesso!");
+
+        // volta pro login
+        window.location.href = "index.html";
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Erro ao conectar com o servidor");
+    });
 
 }
 
