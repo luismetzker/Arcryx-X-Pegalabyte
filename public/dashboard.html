@@ -1,1 +1,225 @@
-preto nazista
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagar - Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================
+   BASE
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    background: linear-gradient(-45deg,#00140f,#001f30,#003d2f,#00284a);
+    background-size:400% 400%;
+    animation:bg 12s ease infinite;
+}
+
+@keyframes bg{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    margin-top:40px;
+    text-align:center;
+}
+
+.title{
+    font-family:'Press Start 2P', cursive;
+    font-size:22px;
+    color:#FFD700;
+    animation:float 6s ease-in-out infinite;
+}
+
+.subtitle{
+    margin-top:10px;
+    font-size:12px;
+    color:#aaa;
+    font-family:'Press Start 2P', cursive;
+    animation:float 7s ease-in-out infinite;
+}
+
+@keyframes float{
+    0%{transform:translateY(0);}
+    50%{transform:translateY(-6px);}
+    100%{transform:translateY(0);}
+}
+
+/* =========================
+   WRAPPER
+========================= */
+
+.wrapper{
+    display:flex;
+    gap:90px;
+    margin-top:60px;
+}
+
+/* =========================
+   MOVIMENTO
+========================= */
+
+.box{
+    width:280px;
+    height:360px;
+}
+
+.mover{
+    width:100%;
+    height:100%;
+    animation:move 9s ease-in-out infinite;
+}
+
+.box:nth-child(1) .mover{animation-duration:8s;}
+.box:nth-child(2) .mover{animation-duration:10s;}
+.box:nth-child(3) .mover{animation-duration:12s;}
+
+@keyframes move{
+    0%{transform:translate(0,0);}
+    25%{transform:translate(12px,-10px);}
+    50%{transform:translate(-10px,8px);}
+    75%{transform:translate(8px,12px);}
+    100%{transform:translate(0,0);}
+}
+
+/* =========================
+   CARD
+========================= */
+
+.card{
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,0.75);
+    border:2px solid #7e6c09;
+    border-radius:18px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    color:white;
+
+    transition:0.25s ease;
+}
+
+/* 🔥 MESMO EFEITO PARA HOVER E CLICK */
+.card:hover,
+.card.active{
+    transform:scale(1.2);
+    z-index:10;
+    border-color:#FFD700;
+    box-shadow:0 0 25px #FFD700;
+}
+
+.card h3{
+    font-family:'Press Start 2P', cursive;
+    font-size:12px;
+    color:#00ff99;
+    margin-bottom:15px;
+}
+
+.card p{
+    font-size:13px;
+    color:#ccc;
+    text-align:center;
+    padding:0 10px;
+}
+
+/* mobile */
+@media (max-width:768px){
+    .wrapper{flex-direction:column;}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="title">Pagar</div>
+    <div class="subtitle">Uma ferramenta de hacker tão boa não seria de graça</div>
+</div>
+
+<div class="wrapper">
+
+    <div class="box" onclick="toggle(this)">
+        <div class="mover">
+            <div class="card">
+                <h3>Mensal</h3>
+                <p>Acesso por 30 dias</p>
+                <p>R$ 59,90</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="box" onclick="toggle(this)">
+        <div class="mover">
+            <div class="card">
+                <h3>Anual</h3>
+                <p>Acesso por 365 dias</p>
+                <p>R$718,80</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="box" onclick="toggle(this)">
+        <div class="mover">
+            <div class="card">
+                <h3>Pagamento</h3>
+                <p>Chame no whatsapp +55 (31) 9 8227-8430</p>
+                <p>Para pagar manualmente sem erros, e ter acesso a essa ferramenta especial</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+function toggle(el){
+
+    const card = el.querySelector(".card");
+    const isActive = card.classList.contains("active");
+
+    // se já está ativo → desativa e sai
+    if(isActive){
+        card.classList.remove("active");
+        return;
+    }
+
+    // remove todos os outros ativos
+    document.querySelectorAll(".card.active").forEach(c => {
+        c.classList.remove("active");
+    });
+
+    // ativa o clicado
+    card.classList.add("active");
+}
+
+</script>
+
+</body>
+</html>
