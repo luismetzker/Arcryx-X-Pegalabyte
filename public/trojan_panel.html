@@ -104,6 +104,19 @@
             color: #000;
         }
 
+        /* Botão Admin - Estilo especial */
+        .admin-btn {
+            background: linear-gradient(135deg, #ff0040, #cc0030);
+            border: 1px solid #ff0040;
+            color: #fff;
+        }
+
+        .admin-btn:hover {
+            background: #ff0040;
+            border-color: #fff;
+            box-shadow: 0 0 10px #ff0040;
+        }
+
         /* Container Principal */
         .main-container {
             display: grid;
@@ -525,9 +538,13 @@
             <div><i class="fas fa-user"></i> <span id="userName">Carregando...</span></div>
             <div><span class="status-led" id="wsLed"></span> <span id="wsStatus">CONECTANDO</span></div>
         </div>
-        <div class="nav-buttons">
+        <div class="nav-buttons" id="navButtons">
             <button class="nav-btn" onclick="refreshDevices()"><i class="fas fa-sync-alt"></i> REFRESH</button>
             <button class="nav-btn" onclick="goToGenerator()"><i class="fas fa-plus-circle"></i> GERADOR</button>
+            <!-- Botão ADMIN - Só aparece se for admin -->
+            <button id="adminPanelBtn" class="nav-btn admin-btn" style="display: none;" onclick="goToAdmin()">
+                <i class="fas fa-crown"></i> ADMIN PANEL
+            </button>
             <button class="nav-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> SAIR</button>
         </div>
     </div>
@@ -753,6 +770,7 @@
         let apiKey = null;
         let isFrozen = false;
         let isControlling = false;
+        let isAdmin = false;  // NOVA VARIÁVEL PARA SABER SE É ADMIN
 
         // ============================================================
         // CARREGAR DADOS DO USUÁRIO
@@ -769,10 +787,34 @@
             userData = JSON.parse(user);
             apiKey = storedApiKey;
             
+            // VERIFICAR SE É ADMIN
+            isAdmin = userData.is_admin === 1;
+            
+            // ATUALIZAR VISIBILIDADE DO BOTÃO ADMIN
+            const adminBtn = document.getElementById('adminPanelBtn');
+            if (isAdmin) {
+                adminBtn.style.display = 'block';
+                console.log('👑 Modo ADMIN ativado - Botão ADMIN visível');
+            } else {
+                adminBtn.style.display = 'none';
+                console.log('👤 Modo usuário normal - Botão ADMIN oculto');
+            }
+            
             document.getElementById('userName').innerText = userData.username || userData.email;
             
             connectWebSocket();
             loadDevices();
+        }
+
+        // ============================================================
+        // FUNÇÃO PARA IR PARA O ADMIN PANEL
+        // ============================================================
+        function goToAdmin() {
+            if (isAdmin) {
+                window.location.href = '/admin.html';
+            } else {
+                showNotification('Acesso negado! Apenas administradores.', 'error');
+            }
         }
 
         // ============================================================
@@ -1257,6 +1299,9 @@
         console.log('%c⚠️ C2 PANEL ULTIMATE ATIVO - CONTROLE TOTAL ⚠️', 'color: #00ff99; font-size: 14px; font-weight: bold;');
         console.log('%c✅ FREEZE SCREEN: Congela a tela da vítima', 'color: #00ced1; font-size: 12px;');
         console.log('%c✅ CONTROLE NÃO SUPERVISIONADO: Controle total sem autorização', 'color: #ff69b4; font-size: 12px;');
+        if (isAdmin) {
+            console.log('%c👑 MODO ADMIN ATIVO - Botão ADMIN PANEL visível', 'color: #ff0040; font-size: 12px; font-weight: bold;');
+        }
     </script>
 </body>
 </html>
