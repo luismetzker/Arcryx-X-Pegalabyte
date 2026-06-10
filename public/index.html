@@ -123,6 +123,7 @@ h2{ color:white; font-size:14px; }
     border-radius:10px;
     font-weight:bold;
     cursor:pointer;
+    transition: all 0.3s;
 }
 
 .login-btn{
@@ -132,6 +133,13 @@ h2{ color:white; font-size:14px; }
 
 .login-btn:hover{
     box-shadow:0 0 15px #00ff99;
+    transform: translateY(-2px);
+}
+
+.login-btn:disabled{
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .register-btn{
@@ -144,12 +152,28 @@ h2{ color:white; font-size:14px; }
 .register-btn:hover{
     background:#FFD700;
     color:black;
+    transform: translateY(-2px);
 }
 
 .footer{
     margin-top:20px;
     color:#666;
     font-size:12px;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #000;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 </style>
@@ -164,16 +188,16 @@ h2{ color:white; font-size:14px; }
     <h2>By: The Gods</h2>
 
     <div class="input-group">
-        <input type="text" id="email" placeholder="Usuário ou Email">
+        <input type="text" id="email" placeholder="Usuário ou Email" autocomplete="username">
         <i class="fa-solid fa-user"></i>
     </div>
 
     <div class="input-group">
-        <input type="password" id="senha" placeholder="Senha">
+        <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
         <i class="fa-solid fa-eye toggle-password" onclick="mostrarSenha()"></i>
     </div>
 
-    <button class="btn login-btn" onclick="login()">Entrar</button>
+    <button class="btn login-btn" onclick="login()" id="loginBtn">Entrar</button>
 
     <button class="btn register-btn" onclick="window.location.href='signup.html'">
         Criar Conta
@@ -200,7 +224,7 @@ function mostrarSenha(){
     }
 }
 
-function login(){
+async function login(){
 
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("senha").value.trim();
@@ -210,32 +234,103 @@ function login(){
         return;
     }
 
-    fetch("https://arcryx-x-pegalabyte.onrender.com/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-    })
-    .then(res => res.json())
-    .then(data => {
+    const btn = document.getElementById("loginBtn");
+    const originalText = btn.innerHTML;
+    
+    // Mostrar loading
+    btn.innerHTML = '<span class="loading-spinner"></span> Entrando...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch("https://arcryx-x-pegalabyte.onrender.com/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
 
         if(data.error){
             alert(data.error);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
             return;
         }
 
         if(!data.redirect){
             alert("Erro: sem redirect do servidor");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
             return;
         }
 
-        // 🔥 IMPORTANTE: garante redirect real do backend
+        // ============================================================
+        // 🔥 IMPORTANTE: SALVAR DADOS DO USUÁRIO NO localStorage
+        // ============================================================
+        if(data.user){
+            localStorage.setItem("c2_user", JSON.stringify(data.user));
+            localStorage.setItem("c2_api_key", data.user.api_key);
+            localStorage.setItem("c2_email", data.user.email);
+            localStorage.setItem("c2_is_admin", data.user.is_admin);
+            localStorage.setItem("c2_is_paid", data.user.is_paid);
+            console.log("✅ Dados do usuário salvos:", data.user);
+            console.log("✅ Redirecionando para:", data.redirect);
+        } else {
+            console.error("❌ Nenhum dado de usuário recebido do servidor");
+        }
+
+        // Redirecionar
         window.location.href = data.redirect;
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Erro ao conectar com o servidor");
-    });
+        
+    } catch(err) {
+        console.error("Erro:", err);
+        alert("Erro ao conectar com o servidor: " + err.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
 }
+
+// ============================================================
+// VERIFICAR SE JÁ ESTÁ LOGADO
+// ============================================================
+(function checkExistingSession() {
+    const savedUser = localStorage.getItem("c2_user");
+    const savedApiKey = localStorage.getItem("c2_api_key");
+    
+    console.log("🔍 Verificando sessão existente...");
+    console.log("savedUser:", savedUser);
+    console.log("savedApiKey:", savedApiKey);
+    
+    if(savedUser && savedApiKey){
+        try {
+            const user = JSON.parse(savedUser);
+            console.log("🔄 Usuário já logado:", user.email);
+            console.log("is_admin:", user.is_admin);
+            console.log("is_paid:", user.is_paid);
+            
+            // Aguardar 1 segundo antes de redirecionar para garantir
+            setTimeout(() => {
+                if(user.is_admin === 1){
+                    console.log("👑 Redirecionando para admin.html");
+                    window.location.href = "/admin.html";
+                } else if(user.is_paid === 1){
+                    console.log("🎮 Redirecionando para trojan_panel.html");
+                    window.location.href = "/trojan_panel.html";
+                } else {
+                    console.log("⚠️ Redirecionando para dashboard.html");
+                    window.location.href = "/dashboard.html";
+                }
+            }, 100);
+        } catch(e) {
+            console.error("❌ Erro ao parsear usuário:", e);
+            // Limpar dados inválidos
+            localStorage.removeItem("c2_user");
+            localStorage.removeItem("c2_api_key");
+        }
+    } else {
+        console.log("🔓 Nenhuma sessão ativa");
+    }
+})();
 
 </script>
 
