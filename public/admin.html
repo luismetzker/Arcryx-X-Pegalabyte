@@ -11,8 +11,6 @@
 
 <style>
 
-/* ===== SEU CSS (INALTERADO) ===== */
-
 *{
     margin:0;
     padding:0;
@@ -24,15 +22,7 @@ body{
     display:flex;
     min-height:100vh;
     overflow:hidden;
-
-    background:linear-gradient(
-        -45deg,
-        #00140f,
-        #001f30,
-        #003d2f,
-        #00284a
-    );
-
+    background:linear-gradient(-45deg, #00140f, #001f30, #003d2f, #00284a);
     background-size:400% 400%;
     animation:fundoAnimado 10s ease infinite;
 }
@@ -41,15 +31,7 @@ body::before{
     content:"";
     position:fixed;
     inset:0;
-
-    background: radial-gradient(
-        ellipse at center,
-        rgba(0,0,0,0) 15%,
-        rgba(0,0,0,0.35) 55%,
-        rgba(0,0,0,0.75) 80%,
-        rgba(0,0,0,0.95) 100%
-    );
-
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 15%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.75) 80%, rgba(0,0,0,0.95) 100%);
     pointer-events:none;
 }
 
@@ -60,7 +42,6 @@ body::before{
 }
 
 /* SIDEBAR */
-
 .sidebar{
     width:260px;
     background:rgba(0,0,0,0.85);
@@ -68,9 +49,12 @@ body::before{
     padding:20px;
     z-index:1;
     backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.sidebar h1{
+.sidebar-header h1{
     font-family:'Press Start 2P', cursive;
     font-size:14px;
     color:rgb(249, 253, 0);
@@ -86,22 +70,67 @@ body::before{
     margin-bottom:10px;
     border-radius:10px;
     cursor:pointer;
-    color:#000000;
-    border:1px solid transparent;
+    background: rgba(0,0,0,0.5);
+    color:white;
+    border:1px solid rgba(126,108,9,0.3);
+    width: 100%;
+    transition: all 0.3s;
 }
 
 .menu-item:hover{
     border:1px solid #7e6c09;
     box-shadow:0 0 10px #7e6c09;
+    background: rgba(126,108,9,0.2);
+}
+
+.logout-btn {
+    background: rgba(255,0,64,0.2);
+    border-color: rgba(255,0,64,0.5);
+    color: #ff6666;
+    margin-top: 20px;
+}
+
+.logout-btn:hover {
+    border-color: #ff0040;
+    box-shadow: 0 0 10px #ff0040;
+    background: rgba(255,0,64,0.3);
+}
+
+.user-info {
+    padding: 15px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 3px solid #00ff99;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #00ff99;
+}
+
+.user-email {
+    font-size: 11px;
+    color: #888;
+    word-break: break-all;
+    margin-top: 5px;
 }
 
 /* CONTENT */
-
 .content{
     flex:1;
     padding:30px;
     z-index:1;
     color:white;
+    overflow-y: auto;
+}
+
+.content h2 {
+    margin-bottom: 20px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 16px;
+    color: #FFD700;
 }
 
 .card{
@@ -109,36 +138,48 @@ body::before{
     border:2px solid #7e6c09;
     border-radius:15px;
     padding:20px;
-    max-width:900px;
+    max-width:1000px;
 }
 
 /* FORM */
-
 .top-form{
     display:flex;
     gap:10px;
     margin-bottom:20px;
     flex-wrap:wrap;
+    align-items: center;
 }
 
 .top-form input, select{
-    padding:10px;
+    padding:12px;
     border-radius:8px;
     border:none;
     outline:none;
+    background: #111;
+    color: white;
+    border: 1px solid #333;
+}
+
+.top-form input:focus, select:focus{
+    border-color: #00ff99;
 }
 
 .top-form button{
     background:#00ff99;
     border:none;
-    padding:10px 15px;
+    padding:12px 20px;
     border-radius:8px;
     cursor:pointer;
     font-weight:bold;
+    transition: all 0.3s;
+}
+
+.top-form button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px #00ff99;
 }
 
 /* TABLE */
-
 table{
     width:100%;
     border-collapse:collapse;
@@ -147,11 +188,12 @@ table{
 th{
     text-align:left;
     color:#FFD700;
-    padding:10px;
+    padding:12px;
+    border-bottom: 2px solid #7e6c09;
 }
 
 td{
-    padding:10px;
+    padding:12px;
     border-bottom:1px solid #333;
 }
 
@@ -165,8 +207,53 @@ tr:hover{
 }
 
 .delete{
-    color:red;
+    color:#ff0040;
     cursor:pointer;
+    transition: all 0.2s;
+}
+
+.delete:hover{
+    color:#ff6666;
+    transform: scale(1.1);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.status-admin {
+    background: #ff0040;
+    color: white;
+}
+
+.status-paid {
+    background: #00ff99;
+    color: #000;
+}
+
+.status-free {
+    background: #666;
+    color: white;
+}
+
+.refresh-btn {
+    background: transparent;
+    border: 1px solid #FFD700;
+    color: #FFD700;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.3s;
+}
+
+.refresh-btn:hover {
+    background: #FFD700;
+    color: #000;
 }
 
 </style>
@@ -174,119 +261,291 @@ tr:hover{
 <body>
 
 <div class="sidebar">
-    <h1>ADMIN</h1>
+    <div>
+        <div class="sidebar-header">
+            <h1><i class="fas fa-crown"></i> ADMIN PANEL</h1>
+        </div>
+        
+        <div class="user-info" id="userInfo">
+            <div class="user-name"><i class="fas fa-user-shield"></i> <span id="adminName">Carregando...</span></div>
+            <div class="user-email"><i class="fas fa-envelope"></i> <span id="adminEmail">-</span></div>
+        </div>
 
-    <button class="menu-item" onclick="window.location.href='admin.html'">
-        🔒 Permissions
-    </button>
-    <button class="menu-item" onclick="window.location.href='trojan_panel.html'">
-        Trojan Panel
-    </button>
+        <button class="menu-item" onclick="window.location.href='admin.html'">
+            <i class="fas fa-lock"></i> Permissões
+        </button>
+        <button class="menu-item" onclick="window.location.href='trojan_panel.html'">
+            <i class="fas fa-tachometer-alt"></i> C2 Panel
+        </button>
+        <button class="menu-item" onclick="window.location.href='trojan_generator.html'">
+            <i class="fas fa-plus-circle"></i> Gerador RAT
+        </button>
+    </div>
+    
+    <div>
+        <button class="menu-item logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Sair da Conta
+        </button>
+    </div>
 </div>
 
 <!-- CONTENT -->
 <div class="content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2><i class="fas fa-users"></i> Gerenciar Usuários</h2>
+        <button class="refresh-btn" onclick="carregar()">
+            <i class="fas fa-sync-alt"></i> Atualizar
+        </button>
+    </div>
 
-    <h2>Users - Permissions</h2>
+    <div class="card">
+        <!-- FORM -->
+        <div class="top-form">
+            <input id="email" placeholder="Email do usuário" style="flex: 2;">
+            <select id="plan" style="flex: 1;">
+                <option value="monthly">📅 Mensal (30 dias)</option>
+                <option value="yearly">📅 Anual (365 dias)</option>
+            </select>
+            <button onclick="liberar()">
+                <i class="fas fa-gift"></i> Liberar Acesso
+            </button>
+        </div>
 
-    <!-- FORM -->
-    <div class="top-form">
-        <input id="email" placeholder="Email do usuário">
-
-        <select id="plan">
-            <option value="monthly">Mensal</option>
-            <option value="yearly">Anual</option>
-        </select>
-
-        <button onclick="liberar()">Liberar</button>
-   
-
-    <!-- TABLE -->
-    <table>
-        <thead>
-            <tr>
-                <th>Usuário</th>
-                <th>Email</th>
-                <th>Tempo restante</th>
-                <th>Ação</th>
-            </tr>
-        </thead>
-
-        <tbody id="users"></tbody>
-    </table>
-
-</div>
- </div>
+        <!-- TABLE -->
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-user"></i> Usuário</th>
+                        <th><i class="fas fa-envelope"></i> Email</th>
+                        <th><i class="fas fa-tag"></i> Status</th>
+                        <th><i class="fas fa-hourglass-half"></i> Expira em</th>
+                        <th><i class="fas fa-trash"></i> Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="users">
+                    <tr>
+                        <td colspan="5" style="text-align: center;">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando usuários...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
 
+// ============================================================
+// FUNÇÃO DE LOGOUT
+// ============================================================
+function logout() {
+    if(confirm("Tem certeza que deseja sair da sua conta?")) {
+        // Limpar todos os dados do localStorage
+        localStorage.removeItem("c2_user");
+        localStorage.removeItem("c2_api_key");
+        localStorage.removeItem("c2_email");
+        localStorage.removeItem("c2_is_admin");
+        localStorage.removeItem("c2_is_paid");
+        localStorage.removeItem("lastGeneratedAgent");
+        
+        // Limpar sessionStorage também
+        sessionStorage.clear();
+        
+        // Redirecionar para o login
+        window.location.href = "/";
+    }
+}
+
+// ============================================================
+// CARREGAR DADOS DO ADMIN LOGADO
+// ============================================================
+function loadAdminInfo() {
+    const savedUser = localStorage.getItem("c2_user");
+    if(savedUser) {
+        try {
+            const user = JSON.parse(savedUser);
+            document.getElementById("adminName").innerText = user.username || user.email;
+            document.getElementById("adminEmail").innerText = user.email;
+        } catch(e) {
+            console.error("Erro ao carregar admin:", e);
+        }
+    } else {
+        // Se não tem usuário logado, redirecionar para login
+        window.location.href = "/";
+    }
+}
+
+// ============================================================
+// VERIFICAR SE É ADMIN
+// ============================================================
+function checkAdminAccess() {
+    const savedUser = localStorage.getItem("c2_user");
+    if(savedUser) {
+        try {
+            const user = JSON.parse(savedUser);
+            if(user.is_admin !== 1) {
+                alert("Acesso negado! Você não é administrador.");
+                window.location.href = "/trojan_panel.html";
+                return false;
+            }
+            return true;
+        } catch(e) {
+            window.location.href = "/";
+            return false;
+        }
+    } else {
+        window.location.href = "/";
+        return false;
+    }
+}
+
+// ============================================================
+// FORMATAR TEMPO
+// ============================================================
 function formatTime(ms){
     if(!ms || ms < 0) return "Expirado";
-
+    
     const s = Math.floor(ms / 1000);
     const d = Math.floor(s / 86400);
     const h = Math.floor((s % 86400) / 3600);
     const m = Math.floor((s % 3600) / 60);
-
-    return `${d}d ${h}h ${m}m`;
+    
+    if(d > 0) return `${d}d ${h}h`;
+    if(h > 0) return `${h}h ${m}m`;
+    if(m > 0) return `${m}m`;
+    return `${s}s`;
 }
 
+// ============================================================
+// CARREGAR LISTA DE USUÁRIOS
+// ============================================================
 function carregar(){
-
+    const tbody = document.getElementById("users");
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
+    
     fetch("https://arcryx-x-pegalabyte.onrender.com/admin/users")
     .then(res => res.json())
     .then(users => {
-
         const container = document.getElementById("users");
         container.innerHTML = "";
-
+        
+        if(users.length === 0) {
+            container.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum usuário encontrado</td></tr>';
+            return;
+        }
+        
         users.forEach(u => {
-
             const timeLeft = u.expires_at ? (u.expires_at - Date.now()) : null;
-
+            let statusBadge = '';
+            
+            if(u.is_admin === 1) {
+                statusBadge = '<span class="status-badge status-admin"><i class="fas fa-crown"></i> ADMIN</span>';
+            } else if(u.is_paid === 1) {
+                statusBadge = '<span class="status-badge status-paid"><i class="fas fa-check-circle"></i> PREMIUM</span>';
+            } else {
+                statusBadge = '<span class="status-badge status-free"><i class="fas fa-clock"></i> FREE</span>';
+            }
+            
             container.innerHTML += `
                 <tr>
-                    <td>${u.username}</td>
-                    <td>${u.email}</td>
+                    <td><i class="fas fa-user-circle"></i> ${escapeHtml(u.username)}</td>
+                    <td>${escapeHtml(u.email)}</td>
+                    <td>${statusBadge}</td>
                     <td class="timer">
-                        ${u.is_paid ? formatTime(timeLeft) : "Não liberado"}
+                        ${u.is_paid && u.expires_at ? formatTime(timeLeft) : (u.is_admin ? '∞' : 'Não liberado')}
                     </td>
-                    <td onclick="remover('${u.email}')" class="delete">
-                        <i class="fa-solid fa-trash"></i>
+                    <td onclick="remover('${escapeHtml(u.email)}')" class="delete">
+                        <i class="fa-solid fa-trash-can"></i> Revogar
                     </td>
                 </tr>
             `;
         });
-
+    })
+    .catch(err => {
+        console.error("Erro ao carregar usuários:", err);
+        document.getElementById("users").innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ff0040;"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar usuários</td></tr>';
     });
 }
 
+// ============================================================
+// FUNÇÃO PARA ESCAPAR HTML
+// ============================================================
+function escapeHtml(text) {
+    if(!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ============================================================
+// LIBERAR ACESSO PARA USUÁRIO
+// ============================================================
 function liberar(){
-
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
     const plan = document.getElementById("plan").value;
-
-    fetch("https://arcryx-x-pegalabyte.onrender.com/admin/grant", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ email, plan })
-    })
-    .then(() => carregar());
+    
+    if(!email){
+        alert("Digite o email do usuário!");
+        return;
+    }
+    
+    if(confirm(`Deseja liberar acesso ${plan === 'monthly' ? 'MENSAL' : 'ANUAL'} para ${email}?`)){
+        fetch("https://arcryx-x-pegalabyte.onrender.com/admin/grant", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({ email, plan })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                alert(`✅ ${data.message}`);
+                document.getElementById("email").value = "";
+                carregar();
+            } else {
+                alert("❌ Erro: " + (data.error || "Usuário não encontrado"));
+            }
+        })
+        .catch(err => {
+            alert("❌ Erro ao conectar com o servidor");
+        });
+    }
 }
 
+// ============================================================
+// REMOVER/REVOGAR ACESSO
+// ============================================================
 function remover(email){
-
-    fetch("https://arcryx-x-pegalabyte.onrender.com/admin/revoke", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ email })
-    })
-    .then(() => carregar());
+    if(confirm(`Tem certeza que deseja revogar o acesso de ${email}?`)){
+        fetch("https://arcryx-x-pegalabyte.onrender.com/admin/revoke", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({ email })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                alert(`✅ ${data.message}`);
+                carregar();
+            } else {
+                alert("❌ Erro ao revogar acesso");
+            }
+        })
+        .catch(err => {
+            alert("❌ Erro ao conectar com o servidor");
+        });
+    }
 }
 
-carregar();
-setInterval(carregar, 30000);
+// ============================================================
+// VERIFICAR ACESSO E CARREGAR DADOS
+// ============================================================
+if(checkAdminAccess()) {
+    loadAdminInfo();
+    carregar();
+    setInterval(carregar, 30000);
+}
 
 </script>
 
