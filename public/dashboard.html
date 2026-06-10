@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pagar - Dashboard</title>
+<title>Dashboard - Arcryx X Pegalabyte</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 
@@ -28,6 +29,7 @@ body{
     background: linear-gradient(-45deg,#00140f,#001f30,#003d2f,#00284a);
     background-size:400% 400%;
     animation:bg 12s ease infinite;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 @keyframes bg{
@@ -43,6 +45,14 @@ body{
 .header{
     margin-top:40px;
     text-align:center;
+    position: relative;
+    z-index: 10;
+}
+
+.logo {
+    width: 80px;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 10px #7e6c09);
 }
 
 .title{
@@ -74,6 +84,9 @@ body{
     display:flex;
     gap:90px;
     margin-top:60px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
 }
 
 /* =========================
@@ -83,6 +96,7 @@ body{
 .box{
     width:280px;
     height:360px;
+    cursor: pointer;
 }
 
 .mover{
@@ -111,7 +125,7 @@ body{
     width:100%;
     height:100%;
 
-    background:rgba(0,0,0,0.75);
+    background:rgba(0,0,0,0.85);
     border:2px solid #7e6c09;
     border-radius:18px;
 
@@ -121,11 +135,12 @@ body{
     align-items:center;
 
     color:white;
+    text-align: center;
 
     transition:0.25s ease;
+    backdrop-filter: blur(5px);
 }
 
-/* 🔥 MESMO EFEITO PARA HOVER E CLICK */
 .card:hover,
 .card.active{
     transform:scale(1.2);
@@ -136,21 +151,244 @@ body{
 
 .card h3{
     font-family:'Press Start 2P', cursive;
-    font-size:12px;
+    font-size:14px;
     color:#00ff99;
     margin-bottom:15px;
 }
 
+.card .price{
+    font-size:24px;
+    font-weight:bold;
+    color:#FFD700;
+    margin: 15px 0;
+}
+
+.card .price small{
+    font-size:12px;
+    color:#aaa;
+}
+
 .card p{
-    font-size:13px;
+    font-size:12px;
     color:#ccc;
     text-align:center;
-    padding:0 10px;
+    padding:0 15px;
+    margin: 8px 0;
+}
+
+.card .feature {
+    font-size: 11px;
+    color: #00ff99;
+    margin: 5px 0;
+}
+
+.card .feature i {
+    margin-right: 5px;
+}
+
+.pix-info {
+    background: rgba(0,255,153,0.1);
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    font-size: 10px;
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.whatsapp-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 11px;
+}
+
+.whatsapp-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #25D366;
+}
+
+/* =========================
+   BOTÃO SAIR
+========================= */
+
+.logout-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.logout-btn {
+    background: rgba(255,0,64,0.2);
+    border: 1px solid #ff0040;
+    color: #ff6666;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    transition: all 0.3s;
+}
+
+.logout-btn:hover {
+    background: rgba(255,0,64,0.4);
+    border-color: #ff0040;
+    box-shadow: 0 0 10px #ff0040;
+}
+
+/* =========================
+   USER INFO
+========================= */
+
+.user-info {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0,0,0,0.7);
+    padding: 10px 15px;
+    border-radius: 10px;
+    border-left: 3px solid #FFD700;
+    z-index: 100;
+}
+
+.user-info .name {
+    font-size: 12px;
+    font-weight: bold;
+    color: #00ff99;
+}
+
+.user-info .email {
+    font-size: 10px;
+    color: #888;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    margin-top: 60px;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 10px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    width: 100%;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: rgba(0,0,0,0.95);
+    border: 2px solid #FFD700;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h3 {
+    color: #FFD700;
+    margin-bottom: 20px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+}
+
+.modal-content p {
+    color: #ccc;
+    margin: 15px 0;
+    font-size: 12px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.modal-btn.confirm {
+    background: #00ff99;
+    color: #000;
+}
+
+.modal-btn.cancel {
+    background: #ff0040;
+    color: #fff;
+}
+
+.modal-btn:hover {
+    transform: translateY(-2px);
 }
 
 /* mobile */
 @media (max-width:768px){
-    .wrapper{flex-direction:column;}
+    .wrapper{
+        flex-direction:column;
+        align-items: center;
+        gap: 30px;
+    }
+    
+    .card:hover,
+    .card.active{
+        transform:scale(1.05);
+    }
+    
+    .logout-container {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .user-info {
+        top: 10px;
+        left: 10px;
+    }
 }
 
 </style>
@@ -158,66 +396,226 @@ body{
 
 <body>
 
+<!-- Botão Sair -->
+<div class="logout-container">
+    <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> SAIR
+    </button>
+</div>
+
+<!-- Informações do Usuário -->
+<div class="user-info" id="userInfo">
+    <div class="name"><i class="fas fa-user"></i> <span id="userName">Carregando...</span></div>
+    <div class="email"><i class="fas fa-envelope"></i> <span id="userEmail">-</span></div>
+</div>
+
 <div class="header">
-    <div class="title">Pagar</div>
-    <div class="subtitle">Uma ferramenta de hacker tão boa não seria de graça</div>
+    <img src="logo.png" class="logo" alt="Logo">
+    <div class="title">🔓 ACESSO RESTRITO</div>
+    <div class="subtitle">Adquira uma licença para ter acesso ao C2 Panel</div>
 </div>
 
 <div class="wrapper">
 
-    <div class="box" onclick="toggle(this)">
+    <!-- Plano Mensal -->
+    <div class="box" onclick="selectPlan('monthly', 59.90)">
         <div class="mover">
             <div class="card">
-                <h3>Mensal</h3>
-                <p>Acesso por 30 dias</p>
-                <p>R$ 59,90</p>
+                <h3><i class="fas fa-calendar-alt"></i> PLANO MENSAL</h3>
+                <div class="price">R$ 59,90 <small>/mês</small></div>
+                <p class="feature"><i class="fas fa-check-circle"></i> Acesso por 30 dias</p>
+                <p class="feature"><i class="fas fa-check-circle"></i> C2 Panel Completo</p>
+                <p class="feature"><i class="fas fa-check-circle"></i> Gerador de RAT</p>
+                <p class="feature"><i class="fas fa-check-circle"></i> Suporte Prioritário</p>
+                <p class="feature"><i class="fas fa-check-circle"></i> Atualizações</p>
             </div>
         </div>
     </div>
 
-    <div class="box" onclick="toggle(this)">
+    <!-- Plano Anual -->
+    <div class="box" onclick="selectPlan('yearly', 718.80)">
         <div class="mover">
             <div class="card">
-                <h3>Anual</h3>
-                <p>Acesso por 365 dias</p>
-                <p>R$718,80</p>
+                <h3><i class="fas fa-star"></i> PLANO ANUAL</h3>
+                <div class="price">R$ 718,80 <small>/ano</small></div>
+                <p class="feature"><i class="fas fa-check-circle"></i> Acesso por 365 dias</p>
+                <p class="feature"><i class="fas fa-check-circle"></i> 2 meses grátis!</p>
+                <p class="feature"><i class="fas fa-check-circle"></i> C2 Panel Completo</p>
+                <p class="feature"><i class="fas fa-check-circle"></i> Gerador de RAT</p>
+                <p class="feature"><i class="fas fa-check-circle"></i> Suporte VIP 24/7</p>
+                <p class="feature"><i class="fas fa-check-circle"></i> Atualizações Prioritárias</p>
             </div>
         </div>
     </div>
 
-    <div class="box" onclick="toggle(this)">
+    <!-- Pagamento via WhatsApp -->
+    <div class="box" onclick="selectPlan('whatsapp', null)">
         <div class="mover">
             <div class="card">
-                <h3>Pagamento</h3>
-                <p>Chame no whatsapp +55 (31) 9 8227-8430</p>
-                <p>Para pagar manualmente sem erros, e ter acesso a essa ferramenta especial</p>
+                <h3><i class="fab fa-whatsapp"></i> PAGAMENTO</h3>
+                <p>📱 Chame no WhatsApp</p>
+                <div class="pix-info">
+                    <i class="fab fa-whatsapp"></i> +55 (31) 9 8227-8430
+                </div>
+                <p>💰 Pix | Cartão | Boleto</p>
+                <p>⚡ Liberação imediata</p>
+                <p>🔒 Pagamento seguro</p>
+                <a href="https://wa.me/5531982278430?text=Olá!%20Gostaria%20de%20adquirir%20uma%20licença%20do%20C2%20Panel" 
+                   target="_blank" 
+                   class="whatsapp-btn"
+                   onclick="event.stopPropagation()">
+                    <i class="fab fa-whatsapp"></i> Falar com Suporte
+                </a>
             </div>
         </div>
     </div>
 
 </div>
 
+<div class="footer">
+    <p>© 2024 The Gods - Arcryx X Pegalabyte | Todos os direitos reservados</p>
+    <p style="margin-top: 5px;">Após o pagamento, sua conta será liberada em até 24h</p>
+</div>
+
+<!-- Modal de Confirmação -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-shopping-cart"></i> Confirmar Compra</h3>
+        <p>Você selecionou o plano <strong id="selectedPlanName"></strong></p>
+        <p>Valor: <strong id="selectedPlanPrice"></strong></p>
+        <p>Após a confirmação, você será redirecionado para o WhatsApp para finalizar o pagamento.</p>
+        <div class="modal-buttons">
+            <button class="modal-btn confirm" onclick="confirmPayment()">
+                <i class="fas fa-check"></i> Confirmar
+            </button>
+            <button class="modal-btn cancel" onclick="closeModal()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 
-function toggle(el){
+// ============================================================
+// VARIÁVEIS GLOBAIS
+// ============================================================
+let selectedPlan = null;
+let selectedAmount = null;
 
-    const card = el.querySelector(".card");
-    const isActive = card.classList.contains("active");
+// ============================================================
+// CARREGAR DADOS DO USUÁRIO
+// ============================================================
+function loadUserData() {
+    const savedUser = localStorage.getItem("c2_user");
+    if(savedUser) {
+        try {
+            const user = JSON.parse(savedUser);
+            document.getElementById("userName").innerText = user.username || user.email;
+            document.getElementById("userEmail").innerText = user.email;
+            
+            // Se já tiver acesso pago, redirecionar para o painel
+            if(user.is_paid === 1) {
+                const now = Date.now();
+                if(!user.expires_at || user.expires_at > now) {
+                    window.location.href = "/trojan_panel.html";
+                }
+            }
+        } catch(e) {
+            console.error("Erro ao carregar usuário:", e);
+        }
+    } else {
+        // Se não tem usuário logado, redirecionar para login
+        window.location.href = "/";
+    }
+}
 
-    // se já está ativo → desativa e sai
-    if(isActive){
-        card.classList.remove("active");
+// ============================================================
+// SELECIONAR PLANO
+// ============================================================
+function selectPlan(plan, amount) {
+    selectedPlan = plan;
+    selectedAmount = amount;
+    
+    const modal = document.getElementById("paymentModal");
+    const planName = document.getElementById("selectedPlanName");
+    const planPrice = document.getElementById("selectedPlanPrice");
+    
+    if(plan === 'monthly') {
+        planName.innerText = "MENSAL (30 dias)";
+        planPrice.innerText = "R$ 59,90";
+    } else if(plan === 'yearly') {
+        planName.innerText = "ANUAL (365 dias)";
+        planPrice.innerText = "R$ 718,80";
+    } else if(plan === 'whatsapp') {
+        // Para WhatsApp, abre direto sem modal
+        window.open("https://wa.me/5531982278430?text=Olá!%20Gostaria%20de%20adquirir%20uma%20licença%20do%20C2%20Panel", "_blank");
         return;
     }
-
-    // remove todos os outros ativos
-    document.querySelectorAll(".card.active").forEach(c => {
-        c.classList.remove("active");
-    });
-
-    // ativa o clicado
-    card.classList.add("active");
+    
+    modal.style.display = "flex";
 }
+
+// ============================================================
+// CONFIRMAR PAGAMENTO
+// ============================================================
+function confirmPayment() {
+    const message = `Olá! Gostaria de adquirir o plano ${selectedPlan === 'monthly' ? 'MENSAL' : 'ANUAL'} do C2 Panel.
+    
+📅 Plano: ${selectedPlan === 'monthly' ? '30 dias' : '365 dias'}
+💰 Valor: R$ ${selectedAmount.toFixed(2)}
+👤 Usuário: ${document.getElementById("userName").innerText}
+📧 Email: ${document.getElementById("userEmail").innerText}
+
+Aguardando instruções para pagamento.`;
+    
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/5531982278430?text=${encodedMessage}`;
+    
+    closeModal();
+    window.open(whatsappUrl, "_blank");
+}
+
+// ============================================================
+// FECHAR MODAL
+// ============================================================
+function closeModal() {
+    const modal = document.getElementById("paymentModal");
+    modal.style.display = "none";
+    selectedPlan = null;
+    selectedAmount = null;
+}
+
+// ============================================================
+// LOGOUT
+// ============================================================
+function logout() {
+    if(confirm("Tem certeza que deseja sair?")) {
+        localStorage.removeItem("c2_user");
+        localStorage.removeItem("c2_api_key");
+        localStorage.removeItem("c2_email");
+        localStorage.removeItem("c2_is_admin");
+        localStorage.removeItem("c2_is_paid");
+        sessionStorage.clear();
+        window.location.href = "/";
+    }
+}
+
+// ============================================================
+// FECHAR MODAL CLICANDO FORA
+// ============================================================
+document.getElementById("paymentModal").addEventListener("click", function(e) {
+    if(e.target === this) {
+        closeModal();
+    }
+});
+
+// ============================================================
+// INICIALIZAR
+// ============================================================
+loadUserData();
+
+console.log("%c⚠️ DASHBOARD - Adquira uma licença para acessar o C2 Panel", "color: #FFD700; font-size: 12px; font-weight: bold;");
 
 </script>
 
